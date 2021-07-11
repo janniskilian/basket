@@ -4,7 +4,7 @@
     <style name="Theme.Basket.DayNight" parent="Theme.Basket.Base">
         <item name="colorOnPrimarySurface">?attr/colorOnSurface</item>
 
-        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:statusBarColor">@color/transparent</item>
     </style>
 
     <style name="ThemeOverlay.Basket.DayNight" parent="ThemeOverlay.MaterialComponents.Dark"/>

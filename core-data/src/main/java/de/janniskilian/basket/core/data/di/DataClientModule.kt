@@ -4,16 +4,16 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import de.janniskilian.basket.core.data.ArticleDataClient
-import de.janniskilian.basket.core.data.ArticleDataClientImpl
-import de.janniskilian.basket.core.data.CategoryDataClient
-import de.janniskilian.basket.core.data.CategoryDataClientImpl
-import de.janniskilian.basket.core.data.DataClient
-import de.janniskilian.basket.core.data.DataClientImpl
-import de.janniskilian.basket.core.data.ShoppingListDataClient
-import de.janniskilian.basket.core.data.ShoppingListDataClientImpl
-import de.janniskilian.basket.core.data.ShoppingListItemDataClient
-import de.janniskilian.basket.core.data.ShoppingListItemDataClientImpl
+import de.janniskilian.basket.core.data.dataclient.ArticleDataClient
+import de.janniskilian.basket.core.data.dataclient.ArticleDataClientImpl
+import de.janniskilian.basket.core.data.dataclient.CategoryDataClient
+import de.janniskilian.basket.core.data.dataclient.CategoryDataClientImpl
+import de.janniskilian.basket.core.data.dataclient.DataClient
+import de.janniskilian.basket.core.data.dataclient.DataClientImpl
+import de.janniskilian.basket.core.data.dataclient.ShoppingListDataClient
+import de.janniskilian.basket.core.data.dataclient.ShoppingListDataClientImpl
+import de.janniskilian.basket.core.data.dataclient.ShoppingListItemDataClient
+import de.janniskilian.basket.core.data.dataclient.ShoppingListItemDataClientImpl
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)

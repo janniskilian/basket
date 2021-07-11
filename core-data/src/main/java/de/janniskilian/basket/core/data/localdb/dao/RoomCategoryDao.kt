@@ -1,5 +1,6 @@
 package de.janniskilian.basket.core.data.localdb.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -22,8 +23,8 @@ interface RoomCategoryDao {
     @Query("SELECT * FROM category WHERE id = :id")
     fun selectSuspend(id: Long): RoomCategory?
 
-    @Query("SELECT * FROM category WHERE searchName LIKE :searchName")
-    fun select(searchName: String): Flow<List<RoomCategory>>
+    @Query("SELECT * FROM category WHERE searchName LIKE :searchName ORDER BY searchName")
+    fun select(searchName: String): PagingSource<Int, RoomCategory>
 
     @Query("SELECT COUNT(id) FROM category")
     fun selectCount(): Int

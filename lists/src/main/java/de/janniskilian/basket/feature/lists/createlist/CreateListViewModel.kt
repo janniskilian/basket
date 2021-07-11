@@ -1,64 +1,77 @@
 package de.janniskilian.basket.feature.lists.createlist
 
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.janniskilian.basket.core.data.DataClient
+import dagger.hilt.android.lifecycle.HiltViewModel
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ShoppingListId
-import de.janniskilian.basket.core.util.android.viewmodel.DefaultMutableLiveData
-import de.janniskilian.basket.core.util.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.Dispatchers
+import de.janniskilian.basket.core.ui.compose.BasketColors
+import de.janniskilian.basket.core.util.android.maybe
+import de.janniskilian.basket.feature.lists.CreateListNavigationDestination
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CreateListViewModel @ViewModelInject constructor(
-    val colors: List<Int>,
+@HiltViewModel
+class CreateListViewModel @Inject constructor(
     private val useCases: CreateListFragmentUseCases,
-    private val dataClient: DataClient
+    private val dataClient: DataClient,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private var shoppingListId: ShoppingListId? = null
+    val colors: List<Color> = BasketColors.listColors
 
-    private val _name = MutableLiveData<String>()
+    private val shoppingListId: ShoppingListId? =
+        savedStateHandle
+            .get<Long>(CreateListNavigationDestination.LIST_ID_PARAM)
+            ?.maybe()
+            ?.let(::ShoppingListId)
 
-    private val _selectedColor = DefaultMutableLiveData(colors.first())
+    private val _name = MutableStateFlow("")
 
-    private val _error = DefaultMutableLiveData(false)
+    private val _selectedColor = MutableStateFlow(colors.first())
 
-    private val _startList = SingleLiveEvent<ShoppingListId>()
+    private val _error = MutableStateFlow(false)
 
-    private val _dismiss = SingleLiveEvent<Unit>()
+    private val _startList = MutableSharedFlow<ShoppingListId>()
+
+    private val _dismiss = MutableSharedFlow<Unit>()
 
     private var isGroupedByCategory = true
 
-    val name: LiveData<String>
+    val name: StateFlow<String>
         get() = _name
 
-    val selectedColor: LiveData<Int>
+    val selectedColor: StateFlow<Color>
         get() = _selectedColor
 
-    val error: LiveData<Boolean>
+    val error: StateFlow<Boolean>
         get() = _error
 
-    val startList: LiveData<ShoppingListId>
+    val startList: SharedFlow<ShoppingListId>
         get() = _startList
 
-    val dismiss: LiveData<Unit>
+    val dismiss: SharedFlow<Unit>
         get() = _dismiss
 
-    fun setShoppingListId(id: ShoppingListId) {
-        shoppingListId = id
-
-        viewModelScope.launch(Dispatchers.Main) {
-            dataClient
-                .shoppingList
-                .get(id)
-                ?.let {
-                    setName(it.name)
-                    setSelectedColor(it.color)
-                    isGroupedByCategory = it.isGroupedByCategory
-                }
+    init {
+        if (shoppingListId != null) {
+            viewModelScope.launch {
+                dataClient
+                    .shoppingList
+                    .get(shoppingListId)
+                    ?.let {
+                        setName(it.name)
+                        setSelectedColor(Color(it.color))
+                        isGroupedByCategory = it.isGroupedByCategory
+                    }
+            }
         }
     }
 
@@ -67,7 +80,7 @@ class CreateListViewModel @ViewModelInject constructor(
         _error.value = false
     }
 
-    fun setSelectedColor(color: Int) {
+    fun setSelectedColor(color: Color) {
         _selectedColor.value = color
     }
 
@@ -81,16 +94,22 @@ class CreateListViewModel @ViewModelInject constructor(
                 viewModelScope.launch {
                     val createdListId = useCases.createList(
                         name,
-                        _selectedColor.value,
+                        _selectedColor.value.toArgb(),
                         isGroupedByCategory
                     )
-                    _startList.postValue(createdListId)
+
+                    _startList.emit(createdListId)
                 }
 
             else -> {
                 viewModelScope.launch {
-                    useCases.updateList(id, name, _selectedColor.value, isGroupedByCategory)
-                    _dismiss.postValue(Unit)
+                    useCases.updateList(
+                        id,
+                        name,
+                        _selectedColor.value.toArgb(),
+                        isGroupedByCategory
+                    )
+                    _dismiss.emit(Unit)
                 }
             }
         }

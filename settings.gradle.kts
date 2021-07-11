@@ -1,0 +1,12 @@
+include(
+    ":core-data",
+    ":core-feature",
+    ":core-type",
+    ":core-ui",
+    ":core-util",
+    ":main",
+    ":lists",
+    ":groups",
+    ":articles",
+    ":categories"
+)

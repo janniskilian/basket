@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.map
 import dagger.hilt.android.AndroidEntryPoint
-import de.janniskilian.basket.core.ui.fragments.BaseFragment
 import de.janniskilian.basket.core.feature.R
 import de.janniskilian.basket.core.ui.databinding.ListItemFragmentBinding
+import de.janniskilian.basket.core.ui.fragments.ViewBaseFragment
 import de.janniskilian.basket.core.util.function.createUiListColor
 
 @AndroidEntryPoint
-class ListItemFragment : BaseFragment<ListItemFragmentBinding>() {
+class ListItemFragment : ViewBaseFragment<ListItemFragmentBinding>() {
 
     private val args by lazy { ListItemFragmentArgs.fromBundle(requireArguments()) }
 

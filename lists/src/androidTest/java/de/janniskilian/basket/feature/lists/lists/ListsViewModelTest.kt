@@ -4,7 +4,7 @@ import android.graphics.Color
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.annotation.UiThreadTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import de.janniskilian.basket.core.data.DataClient
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.test.createTestDataClient
 import de.janniskilian.basket.core.type.domain.ShoppingListId
 import de.janniskilian.basket.core.util.android.getOrAwaitValue

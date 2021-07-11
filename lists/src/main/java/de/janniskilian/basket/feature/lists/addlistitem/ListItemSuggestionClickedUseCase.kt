@@ -1,6 +1,6 @@
 package de.janniskilian.basket.feature.lists.addlistitem
 
-import de.janniskilian.basket.core.data.DataClient
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.Article
 import de.janniskilian.basket.core.type.domain.ShoppingListId
 

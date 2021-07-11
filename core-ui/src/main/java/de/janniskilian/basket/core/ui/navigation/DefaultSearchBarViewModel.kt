@@ -1,19 +1,18 @@
 package de.janniskilian.basket.core.ui.navigation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import de.janniskilian.basket.core.util.android.viewmodel.DefaultMutableLiveData
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class DefaultSearchBarViewModel : SearchBarViewModel {
 
-    private val _searchBarVisible = MutableLiveData<Boolean>()
+    private val _searchBarVisible = MutableStateFlow(false)
 
-    private val _searchBarInput = DefaultMutableLiveData("")
+    private val _searchBarInput = MutableStateFlow("")
 
-    override val searchBarVisible: LiveData<Boolean>
+    override val searchBarVisible: StateFlow<Boolean>
         get() = _searchBarVisible
 
-    override val searchBarInput: LiveData<String>
+    override val searchBarInput: StateFlow<String>
         get() = _searchBarInput
 
     override fun setSearchBarVisible(isVisible: Boolean) {

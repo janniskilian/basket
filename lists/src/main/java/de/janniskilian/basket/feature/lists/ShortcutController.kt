@@ -13,7 +13,7 @@ import kotlin.math.min
 
 class ShortcutController(private val context: Context) {
 
-    fun updateShoppingListShortcuts(shoppingList: ShoppingList) {
+    fun addShoppingListShortcut(shoppingList: ShoppingList) {
         val maxShortcuts = ShortcutManagerCompat.getMaxShortcutCountPerActivity(context)
         val maxShoppingListShortcuts = min(
             getInt(context, R.integer.max_shopping_list_shortcuts),
@@ -23,7 +23,7 @@ class ShortcutController(private val context: Context) {
             .getDynamicShortcuts(context)
             .filter { it.id.startsWith(SHORTCUT_ID_PREFIX) }
 
-        val newShortcutId = createShortcutId(shoppingList.id)
+        val newShortcutId = createShoppingListShortcutId(shoppingList.id)
 
         if (currentShortcuts.none { it.id == newShortcutId }) {
             val n = (currentShortcuts.size + 1 - maxShoppingListShortcuts).coerceAtLeast(0)
@@ -40,7 +40,7 @@ class ShortcutController(private val context: Context) {
     fun removeShoppingListShortcut(shoppingList: ShoppingList) {
         ShortcutManagerCompat.removeDynamicShortcuts(
             context,
-            listOf(createShortcutId(shoppingList.id))
+            listOf(createShoppingListShortcutId(shoppingList.id))
         )
     }
 
@@ -71,12 +71,12 @@ class ShortcutController(private val context: Context) {
             .build()
     }
 
-    private fun createShortcutId(shoppingListId: ShoppingListId) =
+    private fun createShoppingListShortcutId(shoppingListId: ShoppingListId) =
         SHORTCUT_ID_PREFIX + shoppingListId.value.toString()
 
     companion object {
 
-        private const val MAIN_ACTIVITY_CLASS = "de.janniskilian.basket.feature.main.MainActivity"
         private const val SHORTCUT_ID_PREFIX = "de.janniskilian.basket.shortcut_"
+        private const val MAIN_ACTIVITY_CLASS = "de.janniskilian.basket.feature.main.MainActivity"
     }
 }

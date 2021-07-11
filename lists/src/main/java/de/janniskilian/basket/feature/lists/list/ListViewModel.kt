@@ -1,43 +1,52 @@
 package de.janniskilian.basket.feature.lists.list
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import de.janniskilian.basket.core.data.DataClient
+import dagger.hilt.android.lifecycle.HiltViewModel
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ShoppingListId
 import de.janniskilian.basket.core.type.domain.ShoppingListItem
 import de.janniskilian.basket.core.util.android.viewmodel.SingleLiveEvent
+import de.janniskilian.basket.feature.lists.ListNavigationDestination
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.random.Random
 
-class ListViewModel @ViewModelInject constructor(
-    private val dataClient: DataClient
+@ExperimentalCoroutinesApi
+@HiltViewModel
+class ListViewModel @Inject constructor(
+    private val dataClient: DataClient,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val shoppingListId = MutableLiveData<ShoppingListId>()
+    private val shoppingListId = MutableStateFlow(
+        ShoppingListId(savedStateHandle.get<Long>(ListNavigationDestination.LIST_ID_PARAM)!!)
+    )
 
     private var _listItemsRemoved = SingleLiveEvent<List<ShoppingListItem>>()
     private var _allListItemsSetIsChecked = SingleLiveEvent<List<ShoppingListItem>>()
 
-    val shoppingList = shoppingListId.switchMap {
-        dataClient
-            .shoppingList
-            .getAsFlow(it)
-            .asLiveData()
-    }
+    val shoppingList = shoppingListId
+        .flatMapLatest {
+            dataClient
+                .shoppingList
+                .getAsFlow(it)
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val listItemsRemoved: LiveData<List<ShoppingListItem>>
         get() = _listItemsRemoved
 
     val allListItemsSetToChecked: LiveData<List<ShoppingListItem>>
         get() = _allListItemsSetIsChecked
-
-    fun setShoppingListId(id: ShoppingListId) {
-        shoppingListId.value = id
-    }
 
     fun listItemClicked(shoppingListItem: ShoppingListItem) {
         viewModelScope.launch {

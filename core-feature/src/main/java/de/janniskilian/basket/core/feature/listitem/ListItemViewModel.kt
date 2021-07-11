@@ -1,21 +1,21 @@
 package de.janniskilian.basket.core.feature.listitem
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import de.janniskilian.basket.core.data.DataClient
+import dagger.hilt.android.lifecycle.HiltViewModel
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ShoppingListItemId
 import de.janniskilian.basket.core.util.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ListItemViewModel @ViewModelInject constructor(
-    private val dataClient: DataClient
-) : ViewModel() {
+@HiltViewModel
+class ListItemViewModel @Inject constructor(private val dataClient: DataClient) : ViewModel() {
 
     private val listItemId = MutableLiveData<ShoppingListItemId>()
 

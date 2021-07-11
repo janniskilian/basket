@@ -1,40 +1,41 @@
 package de.janniskilian.basket.feature.articles.articles
 
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
-import de.janniskilian.basket.core.data.DataClient
-import de.janniskilian.basket.core.ui.navigation.SearchBarViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import dagger.hilt.android.lifecycle.HiltViewModel
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.Article
-import de.janniskilian.basket.core.util.sortedByName
-import de.janniskilian.basket.core.util.android.viewmodel.DefaultMutableLiveData
+import de.janniskilian.basket.core.ui.navigation.SearchBarViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import javax.inject.Inject
 
-class ArticlesViewModel @ViewModelInject constructor(
+@HiltViewModel
+class ArticlesViewModel @Inject constructor(
     dataClient: DataClient
 ) : ViewModel(), SearchBarViewModel {
 
-    private val _searchBarVisible = MutableLiveData<Boolean>()
+    private val _searchBarVisible = MutableStateFlow(false)
 
-    private val _searchBarInput = DefaultMutableLiveData("")
+    private val _searchBarInput = MutableStateFlow("")
 
-    val articles: LiveData<List<Article>> =
+    val articles: Flow<PagingData<Article>> =
         searchBarInput
-            .switchMap {
+            .flatMapLatest {
                 dataClient
                     .article
-                    .get(it)
-                    .asLiveData()
+                    .getWhereNameLike(it, PAGE_SIZE)
             }
-            .map { it.sortedByName() }
+            .cachedIn(viewModelScope)
 
-    override val searchBarVisible: LiveData<Boolean>
+    override val searchBarVisible: StateFlow<Boolean>
         get() = _searchBarVisible
 
-    override val searchBarInput: LiveData<String>
+    override val searchBarInput: StateFlow<String>
         get() = _searchBarInput
 
     override fun setSearchBarVisible(isVisible: Boolean) {
@@ -46,5 +47,10 @@ class ArticlesViewModel @ViewModelInject constructor(
 
     override fun setSearchBarInput(input: String) {
         _searchBarInput.value = input
+    }
+
+    companion object {
+
+        private const val PAGE_SIZE = 50
     }
 }

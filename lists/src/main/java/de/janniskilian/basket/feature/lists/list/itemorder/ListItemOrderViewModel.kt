@@ -1,17 +1,19 @@
 package de.janniskilian.basket.feature.lists.list.itemorder
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.janniskilian.basket.core.data.DataClient
+import dagger.hilt.android.lifecycle.HiltViewModel
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ShoppingList
 import de.janniskilian.basket.core.type.domain.ShoppingListId
 import de.janniskilian.basket.core.util.android.viewmodel.SingleLiveEvent
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ListItemOrderViewModel @ViewModelInject constructor(
+@HiltViewModel
+class ListItemOrderViewModel @Inject constructor(
     private val useCases: ListItemOrderUseCases,
     private val dataClient: DataClient
 ) : ViewModel() {

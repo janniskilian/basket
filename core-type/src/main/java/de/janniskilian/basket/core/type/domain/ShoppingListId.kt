@@ -1,3 +1,4 @@
 package de.janniskilian.basket.core.type.domain
 
-inline class ShoppingListId(val value: Long)
+@JvmInline
+value class ShoppingListId(val value: Long)

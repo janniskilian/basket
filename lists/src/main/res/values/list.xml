@@ -12,12 +12,12 @@
     <string name="all_list_items_checked_snackbar">All items checked</string>
     <string name="all_list_items_unchecked_snackbar">All items unchecked</string>
 
+    <string name="shopping_list_empty_image_desc">Icon that symbolises an empty list</string>
     <string name="shopping_list_empty_title">This list is empty</string>
     <string name="shopping_list_empty_info">Tap the yellow button to add items</string>
 
-    <string name="fab_add_list_item">Add Item</string>
+    <string name="add_list_item_icon_desc">Add item</string>
 
-    <string name="list_lead_image_desc">Icon that symbolises an empty list</string>
 
     <string name="action_menu_select_item_order">Item order</string>
     <string name="action_menu_check_all_items">Check all items</string>

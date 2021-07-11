@@ -2,9 +2,9 @@ package de.janniskilian.basket.feature.lists
 
 import android.content.Context
 import android.content.Intent
+import de.janniskilian.basket.core.type.domain.ShoppingList
 import de.janniskilian.basket.core.util.MIME_TYPE_TEXT_PLAIN
 import de.janniskilian.basket.core.util.NEWLINE
-import de.janniskilian.basket.core.type.domain.ShoppingList
 
 fun sendShoppingList(context: Context, shoppingList: ShoppingList) {
     val text = shoppingList

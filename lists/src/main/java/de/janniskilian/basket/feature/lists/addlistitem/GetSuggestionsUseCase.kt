@@ -1,11 +1,15 @@
 package de.janniskilian.basket.feature.lists.addlistitem
 
-import de.janniskilian.basket.core.data.DataClient
+import androidx.paging.PagingData
+import androidx.paging.insertHeaderItem
+import androidx.paging.map
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.Article
 import de.janniskilian.basket.core.type.domain.ArticleId
 import de.janniskilian.basket.core.type.domain.ShoppingListId
-import de.janniskilian.basket.core.util.function.addToFront
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class GetSuggestionsUseCase(private val dataClient: DataClient) {
@@ -15,17 +19,23 @@ class GetSuggestionsUseCase(private val dataClient: DataClient) {
     fun run(
         shoppingListId: ShoppingListId,
         input: String
-    ): Flow<List<ShoppingListItemSuggestion>> {
+    ): Flow<PagingData<ShoppingListItemSuggestion>> {
         val parsedInput = parser.parse(input)
-        val articles = dataClient.article.get(parsedInput.name, shoppingListId)
+        val articles =
+            dataClient.article.getSuggestionWhereNameLike(parsedInput.name, shoppingListId)
         val amount = parsedInput.quantity.orEmpty() +
                 parsedInput.unit
                     ?.let { " $it" }
                     .orEmpty()
 
-        return articles.map { result ->
-            val itemSuggestions = result
-                .map {
+        val exactMatch = dataClient
+            .article
+            .getCountWhereNameExactly(parsedInput.name)
+            .map { it == 1 }
+
+        return exactMatch.flatMapLatest { isExactMatchAvailable ->
+            articles.map { result ->
+                val itemSuggestions = result.map {
                     ShoppingListItemSuggestion(
                         it.article,
                         it.isExistingListItem,
@@ -33,29 +43,23 @@ class GetSuggestionsUseCase(private val dataClient: DataClient) {
                         amount
                     )
                 }
-                .sortedBy { it.article.name }
 
-            val exactMatchExists = lazy {
-                result.any {
-                    it.article.name.equals(parsedInput.name, ignoreCase = true)
-                }
-            }
-
-            if (input.isBlank() || exactMatchExists.value) {
-                itemSuggestions
-            } else {
-                itemSuggestions.addToFront(
-                    ShoppingListItemSuggestion(
-                        Article(
-                            ArticleId(0),
-                            parsedInput.name,
-                            null
-                        ),
-                        isExistingListItem = false,
-                        isExistingArticle = false,
-                        quantity = amount
+                if (input.isBlank() || isExactMatchAvailable) {
+                    itemSuggestions
+                } else {
+                    itemSuggestions.insertHeaderItem(
+                        item = ShoppingListItemSuggestion(
+                            Article(
+                                ArticleId(0),
+                                parsedInput.name,
+                                null
+                            ),
+                            isExistingListItem = false,
+                            isExistingArticle = false,
+                            quantity = amount
+                        )
                     )
-                )
+                }
             }
         }
     }

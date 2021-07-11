@@ -1,70 +1,78 @@
 package de.janniskilian.basket.feature.articles.article
 
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import de.janniskilian.basket.core.data.DataClient
+import androidx.paging.cachedIn
+import androidx.paging.insertHeaderItem
+import dagger.hilt.android.lifecycle.HiltViewModel
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ArticleId
 import de.janniskilian.basket.core.type.domain.Category
-import de.janniskilian.basket.core.util.function.addToFront
-import de.janniskilian.basket.core.util.android.viewmodel.DefaultMutableLiveData
-import de.janniskilian.basket.core.util.android.viewmodel.SingleLiveEvent
+import de.janniskilian.basket.feature.articles.ArticleNavigationDestination
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ArticleViewModel @ViewModelInject constructor(
-    private val useCases: ArticleFragmentUseCases,
-    private val dataClient: DataClient
+@HiltViewModel
+class ArticleViewModel @Inject constructor(
+    private val useCases: ArticleUseCases,
+    private val dataClient: DataClient,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private var articleId: ArticleId? = null
+    private val articleId = savedStateHandle
+        .get<Long>(ArticleNavigationDestination.ARTICLE_ID_PARAM)
+        ?.let(::ArticleId)
 
-    private val _name = MutableLiveData<String>()
+    private val _name = MutableStateFlow<String>("")
 
-    private val _category = MutableLiveData<Category?>()
+    private val _category = MutableStateFlow<Category?>(null)
 
-    private val _mode = DefaultMutableLiveData(ArticleFragmentMode.EDIT)
+    private val _mode = MutableStateFlow(ArticleScreenMode.EDIT)
 
-    private val _error = MutableLiveData<Boolean>()
+    private val _error = MutableStateFlow<Boolean>(false)
 
-    private val _dismiss = SingleLiveEvent<Unit>()
+    private val _dismiss = MutableSharedFlow<Unit>()
 
-    val name: LiveData<String>
+    val name: StateFlow<String>
         get() = _name
 
-    val category: LiveData<Category?>
+    val category: StateFlow<Category?>
         get() = _category
 
-    val categories = dataClient.category
-        .get()
+    val categories = dataClient
+        .category
+        .get(pageSize = CATEGORY_PAGE_SIZE)
         .map {
-            it.addToFront(null)
+            it.insertHeaderItem(item = Category.None)
         }
-        .asLiveData()
+        .cachedIn(viewModelScope)
 
-    val mode: LiveData<ArticleFragmentMode>
+    val mode: StateFlow<ArticleScreenMode>
         get() = _mode
 
-    val error: LiveData<Boolean>
+    val error: StateFlow<Boolean>
         get() = _error
 
-    val dismiss: LiveData<Unit>
+    val dismiss: SharedFlow<Unit>
         get() = _dismiss
 
-    fun setArticleId(id: ArticleId) {
-        articleId = id
-
-        viewModelScope.launch {
-            dataClient
-                .article
-                .get(id)
-                ?.let {
-                    setName(it.name)
-                    setCategory(it.category)
-                }
+    init {
+        if (articleId != null) {
+            viewModelScope.launch {
+                dataClient
+                    .article
+                    .get(articleId)
+                    ?.let {
+                        setName(it.name)
+                        setCategory(it.category)
+                    }
+            }
         }
     }
 
@@ -75,18 +83,18 @@ class ArticleViewModel @ViewModelInject constructor(
 
     fun setCategory(category: Category?) {
         _category.value = category
-        _mode.value = ArticleFragmentMode.EDIT
+        _mode.value = ArticleScreenMode.EDIT
     }
 
     fun editCategoryClicked() {
-        _mode.value = ArticleFragmentMode.SELECT_CATEGORY
+        _mode.value = ArticleScreenMode.SELECT_CATEGORY
     }
 
     fun backPressed(): Boolean =
-        if (_mode.value == ArticleFragmentMode.EDIT) {
+        if (_mode.value == ArticleScreenMode.EDIT) {
             false
         } else {
-            _mode.value = ArticleFragmentMode.EDIT
+            _mode.value = ArticleScreenMode.EDIT
             true
         }
 
@@ -94,14 +102,14 @@ class ArticleViewModel @ViewModelInject constructor(
         articleId?.let {
             viewModelScope.launch {
                 useCases.deleteArticle(it)
-                _dismiss.postValue(Unit)
+                _dismiss.emit(Unit)
             }
         }
     }
 
     fun submitButtonClicked() {
         val name = name.value
-        if (name.isNullOrBlank()) {
+        if (name.isBlank()) {
             _error.value = true
         } else {
             viewModelScope.launch {
@@ -112,8 +120,13 @@ class ArticleViewModel @ViewModelInject constructor(
                     useCases.editArticle(id, name, category.value)
                 }
 
-                _dismiss.postValue(Unit)
+                _dismiss.emit(Unit)
             }
         }
+    }
+
+    companion object {
+
+        private const val CATEGORY_PAGE_SIZE = 50
     }
 }

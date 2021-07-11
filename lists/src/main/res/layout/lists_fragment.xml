@@ -28,7 +28,7 @@
         <ImageView
             android:id="@+id/emptyImage"
             style="@style/Widget.Basket.LeadImage"
-            android:contentDescription="@string/lists_lead_image_desc"
+            android:contentDescription="@string/shopping_lists_lead_image_desc"
             app:srcCompat="@drawable/ic_shopping_lists_24"/>
 
         <TextView

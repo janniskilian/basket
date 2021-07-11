@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="TextAppearance.Basket.Headline" parent="TextAppearance.MaterialComponents.Headline5">
+    <style name="TextAppearance.Basket.Headline1" parent="TextAppearance.MaterialComponents.Headline5">
         <item name="android:fontFamily">@font/roboto_slab_700</item>
         <item name="fontFamily">@font/roboto_slab_700</item>
         <item name="android:textSize">26sp</item>

@@ -1,40 +1,51 @@
 package de.janniskilian.basket.feature.lists.addlistitem
 
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import dagger.hilt.android.lifecycle.HiltViewModel
 import de.janniskilian.basket.core.type.domain.ShoppingListId
 import de.janniskilian.basket.core.util.sortedByName
-import de.janniskilian.basket.core.util.android.viewmodel.DefaultMutableLiveData
+import de.janniskilian.basket.feature.lists.AddListItemNavigationDestination
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AddListItemViewModel @ViewModelInject constructor(
+@HiltViewModel
+class AddListItemViewModel @Inject constructor(
     private val getSuggestionsUseCase: GetSuggestionsUseCase,
-    private val listItemSuggestionClickedUseCase: ListItemSuggestionClickedUseCase
+    private val listItemSuggestionClickedUseCase: ListItemSuggestionClickedUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val shoppingListId = MutableLiveData<ShoppingListId>()
+    private val shoppingListId = MutableStateFlow(
+        ShoppingListId(
+            savedStateHandle.get<Long>(AddListItemNavigationDestination.LIST_ID_PARAM)!!
+        )
+    )
 
-    private val _input: MutableLiveData<String> = DefaultMutableLiveData("")
+    private val _input = MutableStateFlow("")
 
-    val input: LiveData<String>
+    val input: StateFlow<String>
         get() = _input
 
-    val items: LiveData<List<ShoppingListItemSuggestion>> =
+    val items: Flow<PagingData<ShoppingListItemSuggestion>> =
         _input
-            .switchMap { inputValue ->
-                shoppingListId.switchMap {
-                    getSuggestionsUseCase
-                        .run(it, inputValue)
-                        .asLiveData()
+            .flatMapLatest { inputValue ->
+                shoppingListId.flatMapConcat {
+                    getSuggestionsUseCase.run(it, inputValue)
                 }
             }
-            .map { it.sortedByName() }
+            .cachedIn(viewModelScope)
 
     fun setShoppingListId(id: ShoppingListId) {
         shoppingListId.value = id
@@ -48,17 +59,13 @@ class AddListItemViewModel @ViewModelInject constructor(
         setInput("")
     }
 
-    fun suggestionItemClicked(position: Int) {
-        val id = shoppingListId.value
-        val item = items.value?.getOrNull(position)
-        if (id != null && item != null) {
-            viewModelScope.launch {
-                listItemSuggestionClickedUseCase.run(id, item)
-            }
+    fun suggestionItemClicked(suggestion: ShoppingListItemSuggestion) {
+        viewModelScope.launch {
+            listItemSuggestionClickedUseCase.run(shoppingListId.value, suggestion)
         }
     }
 
     fun inputDoneButtonClicked() {
-        suggestionItemClicked(0)
+        //items.value?.firstOrNull()?.let(::suggestionItemClicked)
     }
 }

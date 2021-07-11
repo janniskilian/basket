@@ -1,6 +1,6 @@
 package de.janniskilian.basket.feature.lists.createlist
 
-import de.janniskilian.basket.core.data.DataClient
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ShoppingListId
 
 class CreateListFragmentUseCases(private val dataClient: DataClient) {

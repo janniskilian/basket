@@ -22,7 +22,7 @@
         <ImageView
             android:id="@+id/emptyImage"
             style="@style/Widget.Basket.LeadImage"
-            android:contentDescription="@string/list_lead_image_desc"
+            android:contentDescription="@string/shopping_list_empty_image_desc"
             app:layout_constraintBottom_toTopOf="@id/emptyHeadline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

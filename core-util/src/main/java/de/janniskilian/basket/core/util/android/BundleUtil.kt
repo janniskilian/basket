@@ -3,8 +3,8 @@ package de.janniskilian.basket.core.util.android
 import android.content.Intent
 import android.os.Bundle
 
-const val INT_NOTHING = Int.MIN_VALUE
-const val LONG_NOTHING = Long.MIN_VALUE
+const val INT_NOTHING = -1
+const val LONG_NOTHING = INT_NOTHING.toLong()
 
 fun Bundle.getIntOrNull(key: String): Int? {
     val value = getInt(key, INT_NOTHING)

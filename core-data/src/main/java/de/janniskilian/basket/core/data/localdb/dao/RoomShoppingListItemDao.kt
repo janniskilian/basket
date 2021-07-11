@@ -3,6 +3,7 @@ package de.janniskilian.basket.core.data.localdb.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import de.janniskilian.basket.core.data.localdb.entity.RoomShoppingListItem
 import de.janniskilian.basket.core.data.localdb.result.RoomShoppingListItemResult
@@ -17,11 +18,13 @@ interface RoomShoppingListItemDao {
     @Insert
     fun insert(shoppingListItems: List<RoomShoppingListItem>)
 
-    @Query(SELECT_QUERY)
+    @Transaction
+    @Query("SELECT * FROM shoppingListItem WHERE id = :id")
     fun select(id: Long): RoomShoppingListItemResult?
 
-    @Query(SELECT_QUERY)
-    fun selectLiveData(id: Long): Flow<RoomShoppingListItemResult>
+    @Transaction
+    @Query("SELECT * FROM shoppingListItem WHERE id = :id")
+    fun selectFlow(id: Long): Flow<RoomShoppingListItemResult>
 
     @Update
     fun update(shoppingListItem: RoomShoppingListItem)
@@ -46,24 +49,4 @@ interface RoomShoppingListItemDao {
 
     @Query("DELETE FROM shoppingListItem WHERE shoppingListId = :shoppingListId AND checked = 1")
     fun deleteAllCheckedForShoppingList(shoppingListId: Long)
-
-    companion object {
-
-        private const val SELECT_QUERY =
-            """SELECT shoppingListItem.id AS id,
-                shoppingListItem.shoppingListId AS shoppingListId,
-                shoppingListItem.quantity AS quantity,
-                shoppingListItem.comment AS comment, 
-                shoppingListItem.checked AS checked,
-                article.id AS articleId,
-                article.name AS articleName,
-                article.categoryId AS categoryId,
-                category.name AS categoryName
-                FROM shoppingListItem
-                LEFT OUTER JOIN article
-                ON shoppingListItem.articleId = article.id
-                LEFT OUTER JOIN category
-                ON article.categoryId = category.id
-                WHERE shoppingListItem.id = :id"""
-    }
 }

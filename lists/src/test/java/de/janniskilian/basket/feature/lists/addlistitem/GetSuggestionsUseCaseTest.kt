@@ -1,10 +1,15 @@
 package de.janniskilian.basket.feature.lists.addlistitem
 
+import androidx.paging.CombinedLoadStates
+import androidx.paging.DifferCallback
+import androidx.paging.NullPaddedList
+import androidx.paging.PagingData
+import androidx.paging.PagingDataDiffer
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import de.janniskilian.basket.core.data.ArticleDataClient
-import de.janniskilian.basket.core.data.DataClient
+import de.janniskilian.basket.core.data.dataclient.ArticleDataClient
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.Article
 import de.janniskilian.basket.core.type.domain.ArticleId
 import de.janniskilian.basket.core.type.domain.ArticleSuggestion
@@ -14,22 +19,23 @@ import de.janniskilian.basket.core.type.domain.ShoppingListId
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class GetSuggestionsUseCaseTest {
 
-    private val bananas = Article(
-        ArticleId(1),
-        "Bananas",
+    private val apples = Article(
+        ArticleId(2),
+        "Apples",
         Category(
             CategoryId(1),
             "Produce"
         )
     )
-    private val apples = Article(
-        ArticleId(2),
-        "Apples",
+    private val bananas = Article(
+        ArticleId(1),
+        "Bananas",
         Category(
             CategoryId(1),
             "Produce"
@@ -44,25 +50,29 @@ class GetSuggestionsUseCaseTest {
         )
     )
 
-    private val articleDataClientResult = flowOf(
-        listOf(
-            ArticleSuggestion(bananas, false),
-            ArticleSuggestion(apples, true),
-            ArticleSuggestion(clementines, false)
-        )
+    private val articleDataClientResult = listOf(
+        ArticleSuggestion(apples, true),
+        ArticleSuggestion(bananas, false),
+        ArticleSuggestion(clementines, false)
     )
-
-    private val articleDataClient: ArticleDataClient = mock {
-        on { get(any(), ShoppingListId(any())) } doReturn articleDataClientResult
-    }
-
-    private val dataClient: DataClient = mock {
-        on { article } doReturn articleDataClient
-    }
 
     private val shoppingListId = ShoppingListId(1)
 
-    private val useCase = GetSuggestionsUseCase(dataClient)
+    fun useCase(hasExactMatch: Boolean): GetSuggestionsUseCase {
+        val articleDataClient: ArticleDataClient = mock {
+            on { getSuggestionWhereNameLike(any(), ShoppingListId(any())) } doReturn flowOf(
+                PagingData.from(articleDataClientResult)
+            )
+
+            on { getCountWhereNameExactly(any()) } doReturn flowOf(if (hasExactMatch) 1 else 0)
+        }
+
+        val dataClient: DataClient = mock {
+            on { article } doReturn articleDataClient
+        }
+
+        return GetSuggestionsUseCase(dataClient)
+    }
 
     @Test
     fun ascendingOrderingByArticleName() = runBlocking {
@@ -84,9 +94,10 @@ class GetSuggestionsUseCaseTest {
                     isExistingArticle = true
                 )
             ),
-            useCase
+            useCase(hasExactMatch = false)
                 .run(shoppingListId, "")
                 .single()
+                .collectData()
         )
     }
 
@@ -97,17 +108,19 @@ class GetSuggestionsUseCaseTest {
                 Article(
                     ArticleId(
                         0
-                    ), "apple", null
+                    ),
+                    "apple",
+                    null
                 ),
                 isExistingListItem = false,
                 isExistingArticle = false
             ),
-            useCase
+            useCase(hasExactMatch = false)
                 .run(shoppingListId, "apple")
                 .single()
+                .collectData()
                 .first()
         )
-
 
         assertEquals(
             ShoppingListItemSuggestion(
@@ -115,9 +128,10 @@ class GetSuggestionsUseCaseTest {
                 isExistingListItem = true,
                 isExistingArticle = true
             ),
-            useCase
+            useCase(hasExactMatch = true)
                 .run(shoppingListId, apples.name)
                 .single()
+                .collectData()
                 .first()
         )
     }
@@ -157,9 +171,38 @@ class GetSuggestionsUseCaseTest {
                     quantity = formatedQuantity
                 )
             ),
-            useCase
+            useCase(hasExactMatch = false)
                 .run(shoppingListId, "a 2kg")
                 .single()
+                .collectData()
         )
+    }
+
+    suspend fun <T : Any> PagingData<T>.collectData(): List<T> {
+        val differCallback = object : DifferCallback {
+            override fun onChanged(position: Int, count: Int) {}
+            override fun onInserted(position: Int, count: Int) {}
+            override fun onRemoved(position: Int, count: Int) {}
+        }
+        val items = mutableListOf<T>()
+        val differ = object : PagingDataDiffer<T>(differCallback, TestCoroutineDispatcher()) {
+
+            override suspend fun presentNewList(
+                previousList: NullPaddedList<T>,
+                newList: NullPaddedList<T>,
+                newCombinedLoadStates: CombinedLoadStates,
+                lastAccessedIndex: Int,
+                onListPresentable: () -> Unit
+            ): Int? {
+                for (idx in 0 until newList.size)
+                    items.add(newList.getFromStorage(idx))
+
+                onListPresentable()
+
+                return null
+            }
+        }
+        differ.collectFrom(this)
+        return items
     }
 }

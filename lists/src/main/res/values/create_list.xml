@@ -4,6 +4,8 @@
     <string name="create_list_title">Create List</string>
     <string name="edit_list_title">Edit List</string>
 
+    <string name="create_list_icon_desc">Create list</string>
+
     <string name="list_name_hint">List name</string>
     <string name="create_list_color_info">Choose a color for this list.</string>
     <string name="create_list_button">Create</string>

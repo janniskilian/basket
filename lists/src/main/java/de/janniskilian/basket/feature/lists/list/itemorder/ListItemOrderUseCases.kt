@@ -1,6 +1,6 @@
 package de.janniskilian.basket.feature.lists.list.itemorder
 
-import de.janniskilian.basket.core.data.DataClient
+import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ShoppingList
 
 class ListItemOrderUseCases(private val dataClient: DataClient) {

@@ -1,8 +1,10 @@
 package de.janniskilian.basket.core.data.localdb.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import de.janniskilian.basket.core.data.localdb.entity.RoomArticle
 import de.janniskilian.basket.core.data.localdb.result.RoomArticleResult
@@ -18,16 +20,9 @@ interface RoomArticleDao {
     @Insert
     fun insert(articles: List<RoomArticle>)
 
-    @Query(
-        """SELECT article.id AS articleId, article.name AS articleName,
-			category.id AS category_id, category.name AS category_name,
-            category.searchName AS category_searchName
-			FROM article
-			LEFT OUTER JOIN category
-			ON article.categoryId = category.id
-			WHERE article.id = :id"""
-    )
-    fun select(id: Long): RoomArticleResult?
+    @Transaction
+    @Query("SELECT * FROM article WHERE id = :id")
+    fun selectSuggestionWhereNameLike(id: Long): RoomArticleResult?
 
     @Query(
         """SELECT DISTINCT article.id AS articleId, article.name AS articleName,
@@ -41,18 +36,20 @@ interface RoomArticleDao {
 			(SELECT articleId, shoppingListId FROM shoppingListItem
 			WHERE shoppingListId = :shoppingListId) AS listItem
 			ON article.id = listItem.articleId
-			WHERE article.searchName LIKE :searchName"""
+			WHERE article.searchName LIKE :searchName
+            ORDER BY article.searchName"""
     )
-    fun select(
+    fun selectSuggestionWhereNameLike(
         searchName: String,
         shoppingListId: Long
-    ): Flow<List<RoomArticleSuggestionResult>>
+    ): PagingSource<Int, RoomArticleSuggestionResult>
 
-    @Query(SELECT_BY_NAME)
-    fun select(searchName: String): Flow<List<RoomArticleResult>>
+    @Transaction
+    @Query("SELECT * FROM article WHERE searchName LIKE :searchName ORDER BY searchName")
+    fun selectWhereNameLike(searchName: String): PagingSource<Int, RoomArticleResult>
 
-    @Query(SELECT_BY_NAME)
-    fun selectSuspend(searchName: String): List<RoomArticleResult>
+    @Query("SELECT COUNT(id) FROM article WHERE searchName = :searchName")
+    fun selectCountWhereNameExactly(searchName: String): Flow<Int>
 
     @Update
     fun update(article: RoomArticle)
@@ -66,16 +63,4 @@ interface RoomArticleDao {
 
     @Query("DELETE FROM article WHERE id = :id")
     fun delete(id: Long)
-
-    companion object {
-
-        private const val SELECT_BY_NAME =
-            """SELECT article.id AS articleId, article.name AS articleName,
-			category.id AS category_id, category.name AS category_name,
-            category.searchName AS category_searchName
-			FROM article
-			LEFT OUTER JOIN category
-			ON article.categoryId = category.id
-			WHERE article.searchName LIKE :searchName"""
-    }
 }

@@ -1,13 +1,14 @@
 package de.janniskilian.basket.core.data.localdb.result
 
 import androidx.room.Embedded
+import androidx.room.Relation
+import de.janniskilian.basket.core.data.localdb.entity.RoomArticle
 import de.janniskilian.basket.core.data.localdb.entity.RoomCategory
 
 class RoomArticleResult(
-    val articleId: Long,
+    @Embedded
+    val article: RoomArticle,
 
-    val articleName: String,
-
-    @Embedded(prefix = "category_")
+    @Relation(parentColumn = "categoryId", entityColumn = "id", entity = RoomCategory::class)
     val category: RoomCategory?
 )

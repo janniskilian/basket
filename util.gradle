@@ -1,9 +1,0 @@
-ext.commitCount = {
-    def p = Runtime.getRuntime().exec("git rev-list --all --count")
-
-    def result = p.waitFor()
-    if (result != 0) {
-        return 0
-    }
-    return p.getInputStream().readLines().get(0).toInteger()
-}

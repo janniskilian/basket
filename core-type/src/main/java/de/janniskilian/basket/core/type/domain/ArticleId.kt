@@ -1,3 +1,4 @@
 package de.janniskilian.basket.core.type.domain
 
-inline class ArticleId(val value: Long)
+@JvmInline
+value class ArticleId(val value: Long)

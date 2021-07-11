@@ -1,10 +1,7 @@
 package de.janniskilian.basket.core.ui.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
@@ -16,44 +13,26 @@ import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.findNavController
-import androidx.viewbinding.ViewBinding
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.transition.MaterialFadeThrough
-import com.google.android.material.transition.MaterialSharedAxis
 import de.janniskilian.basket.core.ui.R
 import de.janniskilian.basket.core.ui.navigation.KEY_REQUEST_CODE
 import de.janniskilian.basket.core.ui.navigation.NavigationContainerProvider
 import de.janniskilian.basket.core.ui.navigation.ResultCode
 import de.janniskilian.basket.core.ui.navigation.clearResult
 import de.janniskilian.basket.core.ui.navigation.getNavigationResult
-import de.janniskilian.basket.core.util.android.addListener
 import de.janniskilian.basket.core.util.android.doOnEvent
-import de.janniskilian.basket.core.util.android.getLong
 import de.janniskilian.basket.core.util.android.getThemeColor
 import de.janniskilian.basket.core.util.android.hideKeyboard
 import de.janniskilian.basket.core.util.android.viewmodel.DefaultMutableLiveData
+import timber.log.Timber
 
 @Suppress("TooManyFunctions")
-abstract class BaseFragment<VB : ViewBinding> : Fragment() {
-
-    private val transitionDuration by lazy {
-        getLong(requireContext(), R.integer.transition_duration)
-    }
+abstract class BaseFragment : Fragment() {
 
     @IdRes
     private var navDestinationId = 0
 
-    lateinit var binding: VB
-        private set
-
     val navigationContainer
         get() = (requireActivity() as NavigationContainerProvider).navigationContainer
-
-    val toolbar: MaterialToolbar?
-        get() = requireView().findViewById(R.id.toolbar)
-
-    val titleTextView: TextView?
-        get() = toolbar?.findViewById(R.id.title)
 
     @get:MenuRes
     open val menuRes: Int?
@@ -77,38 +56,11 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
     open val useDefaultTransitions get() = true
 
-    abstract fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): VB
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        if (useDefaultTransitions) {
-            setupTransitions()
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? =
-        createViewBinding(inflater, container)
-            .also {
-                binding = it
-            }
-            .root
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         saveNavDestinationId(savedInstanceState)
         setupNavigationResultHandling()
-
-        (view as? ViewGroup)?.isTransitionGroup = true
-
-        titleTextRes?.let {
-            titleTextView?.text = getString(it)
-        }
     }
 
     override fun onDestroy() {
@@ -166,49 +118,8 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
         navOptions: NavOptions? = null
     ) {
         val args = directions.arguments
-        addRequestCodeToBundle(args, requestCode)
+        args.addRequestCode(requestCode)
         navigate(directions.actionId, args, navOptions)
-    }
-
-    fun enableFadeThroughExitTransition() {
-        exitTransition = MaterialFadeThrough().apply {
-            duration = transitionDuration
-            setListener()
-        }
-    }
-
-    private fun setupTransitions() {
-        val isRootDestinationStartedFromRootDestination =
-            (arguments?.getBoolean(KEY_STARTED_FROM_ROOT_DESTINATION) ?: false
-                    && findNavController().currentDestination?.parent?.id == R.id.nav_graph)
-        arguments?.remove(KEY_STARTED_FROM_ROOT_DESTINATION)
-        updateTransitions(isRootDestinationStartedFromRootDestination)
-    }
-
-    private fun updateTransitions(enableRootNavigationTransition: Boolean) {
-        if (enableRootNavigationTransition) {
-            enterTransition = MaterialFadeThrough().apply {
-                duration = transitionDuration
-                setListener()
-            }
-        } else {
-            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-                duration = transitionDuration
-            }
-            exitTransition = enterTransition
-
-            reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-                duration = transitionDuration
-            }
-            returnTransition = reenterTransition
-        }
-    }
-
-    private fun MaterialFadeThrough.setListener() {
-        addListener(
-            onEnd = { updateTransitions(false) },
-            onCancel = { updateTransitions(false) }
-        )
     }
 
     private fun saveNavDestinationId(savedInstanceState: Bundle?) {
@@ -226,6 +137,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
             val backStackEntry = try {
                 findNavController().getBackStackEntry(navDestinationId)
             } catch (e: IllegalArgumentException) {
+                Timber.e(e)
                 return
             }
 
@@ -246,14 +158,12 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
         }
     }
 
-    private fun addRequestCodeToBundle(bundle: Bundle, requestCode: Int) {
-        bundle.putInt(KEY_REQUEST_CODE, requestCode)
-    }
-
     companion object {
-
-        const val KEY_STARTED_FROM_ROOT_DESTINATION = "KEY_STARTED_FROM_ROOT_DESTINATION"
 
         private const val KEY_NAV_DESTINATION_ID = "KEY_NAV_DESTINATION_ID"
     }
+}
+
+private fun Bundle.addRequestCode(requestCode: Int) {
+    putInt(KEY_REQUEST_CODE, requestCode)
 }

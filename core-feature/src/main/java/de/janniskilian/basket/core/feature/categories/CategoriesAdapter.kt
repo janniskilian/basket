@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import de.janniskilian.basket.core.feature.R
 import de.janniskilian.basket.core.feature.databinding.CategoryItemBinding
 import de.janniskilian.basket.core.type.domain.Category
-import de.janniskilian.basket.core.util.android.view.layoutInflater
 import de.janniskilian.basket.core.util.android.setContainerTransformTransitionName
+import de.janniskilian.basket.core.util.android.view.layoutInflater
 import de.janniskilian.basket.core.util.android.view.recyclerview.GenericDiffItemCallback
 
 class CategoriesAdapter : ListAdapter<CategoriesAdapter.Item, CategoriesAdapter.ViewHolder>(

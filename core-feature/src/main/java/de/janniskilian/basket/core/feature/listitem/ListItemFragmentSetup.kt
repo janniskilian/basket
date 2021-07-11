@@ -1,9 +1,9 @@
 package de.janniskilian.basket.core.feature.listitem
 
 import de.janniskilian.basket.core.type.domain.ShoppingListItemId
+import de.janniskilian.basket.core.util.android.setupDetailContainerTransformTransition
 import de.janniskilian.basket.core.util.android.view.doOnTextChanged
 import de.janniskilian.basket.core.util.android.view.onDone
-import de.janniskilian.basket.core.util.android.setupDetailContainerTransformTransition
 
 class ListItemFragmentSetup(
     private val fragment: ListItemFragment,

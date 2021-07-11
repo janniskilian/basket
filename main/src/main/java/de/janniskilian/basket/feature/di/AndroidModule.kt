@@ -4,13 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.createDataStore
 import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import de.janniskilian.basket.core.util.android.defaultPreferencesDataStore
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -27,10 +27,5 @@ class AndroidModule {
     fun provideDefaultPreferencesDataStore(
         @ApplicationContext context: Context
     ): DataStore<Preferences> =
-        context.createDataStore(name = DEFAULT_PREFERENCES_DATA_STORE_NAME)
-
-    companion object {
-
-        private const val DEFAULT_PREFERENCES_DATA_STORE_NAME = "default"
-    }
+        context.defaultPreferencesDataStore
 }

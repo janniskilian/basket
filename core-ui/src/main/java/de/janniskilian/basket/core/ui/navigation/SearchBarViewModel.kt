@@ -1,12 +1,12 @@
 package de.janniskilian.basket.core.ui.navigation
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.StateFlow
 
 interface SearchBarViewModel {
 
-    val searchBarVisible: LiveData<Boolean>
+    val searchBarVisible: StateFlow<Boolean>
 
-    val searchBarInput: LiveData<String>
+    val searchBarInput: StateFlow<String>
 
     fun setSearchBarVisible(isVisible: Boolean)
 
