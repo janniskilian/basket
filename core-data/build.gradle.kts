@@ -15,7 +15,6 @@ dependencies {
 
     implementation(Dependencies.Compose.paging)
 
-    implementation(Dependencies.AndroidX.livedata)
     implementation(Dependencies.AndroidX.roomRuntime)
     implementation(Dependencies.AndroidX.roomKtx)
     kapt(Dependencies.AndroidX.roomCompiler)

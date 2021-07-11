@@ -11,6 +11,6 @@ import de.janniskilian.basket.core.data.dataclient.DataClient
 class CreateListModule {
 
     @Provides
-    fun provideCreateListFragmentUseCases(dataClient: DataClient): CreateListFragmentUseCases =
-        CreateListFragmentUseCases(dataClient)
+    fun provideCreateListUseCases(dataClient: DataClient): CreateListUseCases =
+        CreateListUseCases(dataClient)
 }

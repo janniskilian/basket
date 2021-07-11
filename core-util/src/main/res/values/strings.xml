@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <string name="item_transition_name">item_transition_name_%1$d</string>
-    <string name="detail_transition_name">detail_transition_name</string>
-
-</resources>

@@ -7,7 +7,6 @@ import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.Article
-import de.janniskilian.basket.core.ui.navigation.SearchBarViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,11 +16,17 @@ import javax.inject.Inject
 @HiltViewModel
 class ArticlesViewModel @Inject constructor(
     dataClient: DataClient
-) : ViewModel(), SearchBarViewModel {
+) : ViewModel() {
 
     private val _searchBarVisible = MutableStateFlow(false)
 
     private val _searchBarInput = MutableStateFlow("")
+
+    val searchBarVisible: StateFlow<Boolean>
+        get() = _searchBarVisible
+
+    val searchBarInput: StateFlow<String>
+        get() = _searchBarInput
 
     val articles: Flow<PagingData<Article>> =
         searchBarInput
@@ -32,20 +37,14 @@ class ArticlesViewModel @Inject constructor(
             }
             .cachedIn(viewModelScope)
 
-    override val searchBarVisible: StateFlow<Boolean>
-        get() = _searchBarVisible
-
-    override val searchBarInput: StateFlow<String>
-        get() = _searchBarInput
-
-    override fun setSearchBarVisible(isVisible: Boolean) {
+    fun setSearchBarVisible(isVisible: Boolean) {
         _searchBarVisible.value = isVisible
         if (!isVisible) {
             setSearchBarInput("")
         }
     }
 
-    override fun setSearchBarInput(input: String) {
+    fun setSearchBarInput(input: String) {
         _searchBarInput.value = input
     }
 

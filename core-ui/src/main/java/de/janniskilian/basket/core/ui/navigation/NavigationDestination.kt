@@ -11,7 +11,7 @@ interface NavigationDestination {
     val argumentsList: List<NamedNavArgument> get() = emptyList()
 
     @Composable
-    fun Content(arguments: Bundle?)
+    fun Content()
 
     fun isRouteFromDestination(route: String): Boolean =
         route.substringBeforeLast("/") == routeScheme.substringBeforeLast("/")

@@ -13,6 +13,4 @@
 
     <string name="color_selector_item_desc">Color selector item</string>
 
-    <dimen name="color_item_size">40dp</dimen>
-
 </resources>

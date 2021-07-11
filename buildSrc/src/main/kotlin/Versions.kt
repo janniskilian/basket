@@ -16,7 +16,7 @@ object Versions {
     const val APPLICATION_ID = "de.janniskilian.basket"
 
     const val BUILD_TOOLS = "31.0.0-rc5"
-    const val TARGET_SDK = "S"
-    const val COMPILE_SDK = "android-S"
+    const val TARGET_SDK = 30
+    const val COMPILE_SDK = 30
     const val MIN_SDK = 21
 }

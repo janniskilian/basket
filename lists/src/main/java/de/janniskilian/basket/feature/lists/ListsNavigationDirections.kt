@@ -21,7 +21,7 @@ object ListsNavigationDestination : NavigationDestination {
 
     @ExperimentalMaterialApi
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
         ListsContent()
     }
 }
@@ -41,7 +41,7 @@ object CreateListNavigationDestination : NavigationDestination {
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
         CreateListContent()
     }
 }
@@ -61,7 +61,7 @@ object ListNavigationDestination : NavigationDestination {
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
         ListContent()
     }
 }
@@ -81,7 +81,7 @@ object AddListItemNavigationDestination : NavigationDestination {
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
         AddListItemContent()
     }
 }

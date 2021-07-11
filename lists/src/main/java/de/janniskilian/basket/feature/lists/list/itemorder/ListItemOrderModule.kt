@@ -11,6 +11,6 @@ import de.janniskilian.basket.core.data.dataclient.DataClient
 class ListItemOrderModule {
 
     @Provides
-    fun provideArticleFragmentUseCases(dataClient: DataClient): ListItemOrderUseCases =
+    fun provideArticleUseCases(dataClient: DataClient): ListItemOrderUseCases =
         ListItemOrderUseCases(dataClient)
 }

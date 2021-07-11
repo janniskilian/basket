@@ -25,10 +25,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.SentimentSatisfied
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,7 +41,10 @@ import de.janniskilian.basket.core.type.domain.ShoppingListItem
 import de.janniskilian.basket.core.ui.compose.BasketTheme
 import de.janniskilian.basket.core.ui.compose.component.EmptyScreen
 import de.janniskilian.basket.core.ui.compose.du
+import de.janniskilian.basket.core.util.android.findWindow
+import de.janniskilian.basket.core.util.android.keepScreenOn
 import de.janniskilian.basket.core.util.compose.LocalNavController
+import de.janniskilian.basket.core.util.sortedByName
 import de.janniskilian.basket.core.util.test.createTestArticle
 import de.janniskilian.basket.core.util.test.createTestCategory
 import de.janniskilian.basket.core.util.test.createTestShoppingList
@@ -64,12 +69,19 @@ fun ListContent(
 
     val shoppingList by viewModel.shoppingList.collectAsState()
 
+    val view = LocalView.current
+    val window = remember { view.context.findWindow() }
+    LaunchedEffect(true) {
+        window?.keepScreenOn(true)
+    }
+
     ListLayout(
         shoppingList = shoppingList,
         onItemClick = viewModel::listItemClicked,
         onFabClick = {
             shoppingList?.id?.let {
-                navController.navigate(AddListItemNavigationDestination.createRoute(it))
+                //navController.navigate(AddListItemNavigationDestination.createRoute(it))
+                navController.navigate("list/itemOrder/${shoppingList!!.id.value}")
             }
         }
     )
@@ -203,7 +215,7 @@ private fun LazyListScope.uncheckedItems(
             listItems(
                 items = uncheckedItemGroups[category]
                     .orEmpty()
-                    .sortedBy(::selectArticleName),
+                    .sortedByName(),
                 onItemClick = onItemClick
             )
 
@@ -239,7 +251,7 @@ private fun LazyListScope.checkedItems(
         }
 
         listItems(
-            items = checkedListItems.sortedBy(::selectArticleName),
+            items = checkedListItems.sortedByName(),
             onItemClick = onItemClick
         )
 
@@ -261,19 +273,16 @@ private fun LazyListScope.listItems(
     }
 }
 
-private fun selectArticleName(item: ShoppingListItem): String =
-    item.article.name
-
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @Preview(showBackground = true)
 @Composable
 private fun ListLayoutPreview() {
-    val categories = (0 until 5).map { createTestCategory() }
-    val articles = (0 until 20).map { createTestArticle(categories.random()) }
+    val categories = (0 until NUM_PREVIEW_CATEGORIES).map { createTestCategory() }
+    val articles = (0 until NUM_PREVIEW_ARTICLES).map { createTestArticle(categories.random()) }
 
     var list = createTestShoppingList()
-    val listItems = (0 until 25).map {
+    val listItems = (0 until NUM_PREVIEW_LIST_ITEMS).map {
         createTestShoppingListItem(list, articles.random())
     }
     list = createTestShoppingList(listItems)
@@ -284,3 +293,7 @@ private fun ListLayoutPreview() {
         )
     }
 }
+
+private const val NUM_PREVIEW_CATEGORIES = 5
+private const val NUM_PREVIEW_ARTICLES = 20
+private const val NUM_PREVIEW_LIST_ITEMS = 25

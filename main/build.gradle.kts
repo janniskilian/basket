@@ -14,6 +14,11 @@ android {
             isShrinkResources = true
         }
     }
+
+    packagingOptions {
+        resources.excludes.add("META-INF/LGPL2.1")
+        resources.excludes.add("META-INF/AL2.0")
+    }
 }
 
 dependencies {
@@ -29,17 +34,9 @@ dependencies {
     implementation(Dependencies.AndroidX.core)
     implementation(Dependencies.AndroidX.appcompat)
     implementation(Dependencies.AndroidX.activity)
-    implementation(Dependencies.AndroidX.fragment)
-    implementation(Dependencies.AndroidX.livedata)
     implementation(Dependencies.AndroidX.viewmodel)
-    implementation(Dependencies.AndroidX.constraintlayout)
     implementation(Dependencies.AndroidX.preference)
     implementation(Dependencies.AndroidX.roomRuntime)
     implementation(Dependencies.AndroidX.roomKtx)
     implementation(Dependencies.AndroidX.datastorePref)
-
-    implementation(Dependencies.material)
-
-    androidTestImplementation(Dependencies.AndroidTesting.espresso)
-    androidTestImplementation(Dependencies.AndroidTesting.espressoContrib)
 }

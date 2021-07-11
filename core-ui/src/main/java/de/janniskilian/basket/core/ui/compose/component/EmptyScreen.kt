@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -57,8 +58,7 @@ private fun EmptyScreenImage(
         colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurfaceShade),
         contentDescription = imageDescription,
         modifier = Modifier
-            .requiredWidth(12.du)
-            .requiredHeight(12.du)
+            .size(12.du)
             .then(modifier)
     )
 }
@@ -99,7 +99,8 @@ fun EmptyScreenPreview() {
             imageVector = Icons.Outlined.GroupWork,
             imageDescription = "Icon that symbolises groups",
             headline = "You have no groups",
-            info = "A group can contain multiple articles that you regularly buy at the same time. You can then add the whole group to a list in one go."
+            info = """A group can contain multiple articles that you regularly buy at the same time.
+                 You can then add the whole group to a list in one go.""".trimIndent()
         )
     }
 }

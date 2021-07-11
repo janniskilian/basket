@@ -134,9 +134,9 @@ private fun formatItemSuggestion(suggestion: ShoppingListItemSuggestion): String
 @Preview(showBackground = true)
 @Composable
 private fun AddListItemLayoutPreview() {
-    val articles = (0 until 20).map { createTestArticle() }
+    val articles = (0 until NUM_PREVIEW_LIST_ITEMS).map { createTestArticle() }
     val suggestions = articles.mapIndexed { i, article ->
-        ShoppingListItemSuggestion(article, i % 5 != 0, true)
+        ShoppingListItemSuggestion(article, i % PREVIEW_SELECTION_STEP != 0, true)
     }
 
     BasketTheme {
@@ -145,3 +145,6 @@ private fun AddListItemLayoutPreview() {
         )
     }
 }
+
+private const val NUM_PREVIEW_LIST_ITEMS = 20
+private const val PREVIEW_SELECTION_STEP = 5

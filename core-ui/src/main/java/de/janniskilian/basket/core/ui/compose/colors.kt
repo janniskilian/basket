@@ -37,5 +37,6 @@ val Colors.onSurfaceShade
 val Colors.primaryShade
     get() = primary.copy(alpha = 0.12f)
 
+@Suppress("MagicNumber")
 val Colors.strokeShade
     get() = Color(0x33000000)

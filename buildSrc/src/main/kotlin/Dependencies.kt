@@ -19,14 +19,10 @@ object Dependencies {
         const val core = "androidx.core:core-ktx:1.6.0"
         const val appcompat = "androidx.appcompat:appcompat:1.3.0"
         const val activity = "androidx.activity:activity-ktx:1.3.0-rc01"
-        const val fragment = "androidx.fragment:fragment-ktx:1.3.5"
-        const val livedata = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.LIFECYCLE}"
         const val viewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.LIFECYCLE}"
-        const val navFragment = "androidx.navigation:navigation-fragment-ktx:${Versions.NAV}"
         const val roomRuntime = "androidx.room:room-runtime:${Versions.ROOM}"
         const val roomKtx = "androidx.room:room-ktx:${Versions.ROOM}"
         const val roomCompiler = "androidx.room:room-compiler:${Versions.ROOM}"
-        const val constraintlayout = "androidx.constraintlayout:constraintlayout:2.0.4"
         const val datastorePref = "androidx.datastore:datastore-preferences:1.0.0-rc01"
         const val preference = "androidx.preference:preference-ktx:1.1.1"
     }
@@ -68,6 +64,11 @@ object Dependencies {
 
         const val accompanistInsets =
             "com.google.accompanist:accompanist-insets:${Versions.ACCOMPANIST}"
+
+        const val uiTestJunit = "androidx.compose.ui:ui-test-junit4:${Versions.COMPOSE}"
+
+        const val uiTestManifest = "androidx.compose.ui:ui-test-manifest:${Versions.COMPOSE}"
+
     }
 
     object Hilt {
@@ -77,8 +78,6 @@ object Dependencies {
         const val testing = "com.google.dagger:hilt-android-testing:${Versions.HILT}"
         const val androidXCompiler = "androidx.hilt:hilt-compiler:${Versions.HILT_ANDROID_X}"
     }
-
-    const val material = "com.google.android.material:material:1.3.0"
 
     const val timber = "com.jakewharton.timber:timber:4.7.1"
 
@@ -97,22 +96,16 @@ object Dependencies {
         const val runner = "androidx.test:runner:1.4.0"
         const val rules = "androidx.test:rules:1.4.0"
         const val junit = "androidx.test.ext:junit:1.1.1"
-        const val espresso = "androidx.test.espresso:espresso-core:${Versions.ESPRESSO}"
-        const val espressoContrib = "androidx.test.espresso:espresso-contrib:${Versions.ESPRESSO}"
-        const val livedata = "androidx.arch.core:core-testing:2.1.0"
         const val room = "androidx.room:room-testing:${Versions.ROOM}"
         const val hilt = "com.google.dagger:hilt-android-testing:${Versions.HILT}"
         const val hiltCompiler = "com.google.dagger:hilt-android-compiler:${Versions.HILT}"
         const val paging = "androidx.paging:paging-common:3.0.0"
-        const val barista = "com.schibsted.spain:barista:3.9.0"
     }
 
     object GradlePlugins {
 
         const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}"
         const val android = "com.android.tools.build:gradle:7.1.0-alpha03"
-        const val navSafeArgs =
-            "androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.NAV}"
         const val hilt = "com.google.dagger:hilt-android-gradle-plugin:2.37"
     }
 }

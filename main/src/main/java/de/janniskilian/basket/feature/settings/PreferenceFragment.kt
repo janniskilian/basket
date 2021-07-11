@@ -29,7 +29,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         updateDayNightModePreference()
 
-        setPreferencesFromResource(R.xml.preference_screen, rootKey)
+        //setPreferencesFromResource(R.xml.preference_screen, rootKey)
         setupSystemDayNightModeSwitch()
         setupDayNightModeSwitch()
     }

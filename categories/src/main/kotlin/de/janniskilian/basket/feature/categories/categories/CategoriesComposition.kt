@@ -77,7 +77,7 @@ private fun CategoryItem(category: Category, articleClickListener: (category: Ca
 @Preview(showBackground = true)
 @Composable
 private fun CategoriesDefaultPreview() {
-    val categories = (0 until 20).map { createTestCategory() }
+    val categories = (0 until NUM_PREVIEW_CATEGORIES).map { createTestCategory() }
 
     BasketTheme {
         CategoriesLayout(
@@ -86,3 +86,5 @@ private fun CategoriesDefaultPreview() {
         )
     }
 }
+
+private const val NUM_PREVIEW_CATEGORIES = 20

@@ -87,8 +87,8 @@ private fun ArticleItem(article: Article, articleClickListener: (article: Articl
 @Preview(showBackground = true)
 @Composable
 private fun ArticlesLayoutPreview() {
-    val categories = (0 until 5).map { createTestCategory() }
-    val articles = (0 until 20).map { createTestArticle(categories.random()) }
+    val categories = (0 until NUM_PREVIEW_CATEGORIES).map { createTestCategory() }
+    val articles = (0 until NUM_PREVIEW_ARTICLES).map { createTestArticle(categories.random()) }
 
     BasketTheme {
         ArticlesLayout(
@@ -96,3 +96,6 @@ private fun ArticlesLayoutPreview() {
         )
     }
 }
+
+private const val NUM_PREVIEW_CATEGORIES = 5
+private const val NUM_PREVIEW_ARTICLES = 20

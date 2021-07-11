@@ -11,6 +11,6 @@ import de.janniskilian.basket.core.data.dataclient.DataClient
 class ArticleModule {
 
     @Provides
-    fun provideArticleFragmentUseCases(dataClient: DataClient): ArticleUseCases =
+    fun provideArticleUseCases(dataClient: DataClient): ArticleUseCases =
         ArticleUseCases(dataClient)
 }

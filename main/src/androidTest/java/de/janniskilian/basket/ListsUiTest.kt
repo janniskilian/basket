@@ -1,20 +1,6 @@
 package de.janniskilian.basket
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
-import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
-import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotExist
-import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickBack
-import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
-import com.schibsted.spain.barista.interaction.BaristaEditTextInteractions.writeTo
-import org.hamcrest.Matchers.allOf
-import org.junit.Test
-import org.junit.runner.RunWith
-
-@RunWith(AndroidJUnit4::class)
+/*@RunWith(AndroidJUnit4::class)
 @LargeTest
 class ListsUiTest : BaseUiTest() {
 
@@ -48,4 +34,4 @@ class ListsUiTest : BaseUiTest() {
 
         assertDisplayed(newName)
     }
-}
+}*/

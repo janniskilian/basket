@@ -41,9 +41,10 @@ class ArticleDataClientImpl @Inject constructor(
 
     override fun getSuggestionWhereNameLike(
         name: String,
-        shoppingListId: ShoppingListId
+        shoppingListId: ShoppingListId,
+        pageSize: Int
     ): Flow<PagingData<ArticleSuggestion>> =
-        Pager(PagingConfig(50)) {
+        Pager(PagingConfig(pageSize)) {
             dao.selectSuggestionWhereNameLike(
                 "${name.withoutSpecialChars()}%",
                 shoppingListId.value

@@ -2,6 +2,7 @@ package de.janniskilian.basket.feature.categories.category
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import de.janniskilian.basket.core.ui.compose.BasketTheme
+import de.janniskilian.basket.core.ui.compose.du
 
 @Composable
 fun CategoryContent(viewModel: CategoryViewModel = hiltViewModel()) {
@@ -22,10 +24,12 @@ fun CategoryContent(viewModel: CategoryViewModel = hiltViewModel()) {
 
 @Composable
 private fun CategoryLayout(categoryName: String?) {
-    Column {
+    Column(
+        modifier = Modifier.padding(2.du)
+    ) {
         Text(
             text = categoryName.orEmpty(),
-            style = MaterialTheme.typography.h2,
+            style = MaterialTheme.typography.h1,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()

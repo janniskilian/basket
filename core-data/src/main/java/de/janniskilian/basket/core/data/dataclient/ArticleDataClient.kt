@@ -22,7 +22,8 @@ interface ArticleDataClient {
 
     fun getSuggestionWhereNameLike(
         name: String,
-        shoppingListId: ShoppingListId
+        shoppingListId: ShoppingListId,
+        pageSize: Int
     ): Flow<PagingData<ArticleSuggestion>>
 
     fun getWhereNameLike(name: String = "", pageSize: Int): Flow<PagingData<Article>>

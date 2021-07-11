@@ -56,6 +56,9 @@ import de.janniskilian.basket.feature.lists.ListsNavigationDestination
 import de.janniskilian.basket.feature.lists.R
 import kotlinx.coroutines.flow.collect
 
+
+private const val SELECTED_COLOR_ITEM_SCALE = 1.2f
+
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
@@ -157,7 +160,7 @@ private fun ColumnScope.CreateListColorsRow(
             items(colors, key = { it.toArgb() }) { color ->
                 val isSelected = color == selectedColor
                 val scale by animateFloatAsState(
-                    if (isSelected) 1.2f else 1f,
+                    if (isSelected) SELECTED_COLOR_ITEM_SCALE else 1f,
                     spring(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
                         stiffness = Spring.StiffnessMedium

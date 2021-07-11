@@ -16,7 +16,7 @@ object ArticlesNavigationDestination : NavigationDestination {
 
     @ExperimentalMaterialApi
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
         ArticlesContent()
     }
 }
@@ -33,7 +33,7 @@ object ArticleNavigationDestination : NavigationDestination {
     fun createRoute(articleId: ArticleId? = null) = "article/${articleId?.value}"
 
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
         ArticleContent()
     }
 }

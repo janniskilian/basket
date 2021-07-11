@@ -1,13 +1,6 @@
 package de.janniskilian.basket
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
-import com.schibsted.spain.barista.assertion.BaristaAssertions.assertThatBackButtonClosesTheApp
-import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
-import org.junit.Test
-import org.junit.runner.RunWith
-
-@RunWith(AndroidJUnit4::class)
+/*@RunWith(AndroidJUnit4::class)
 @LargeTest
 class NavigationUiTest : BaseUiTest() {
 
@@ -30,4 +23,4 @@ class NavigationUiTest : BaseUiTest() {
 
         assertThatBackButtonClosesTheApp()
     }
-}
+}*/

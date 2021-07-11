@@ -1,21 +1,6 @@
 package de.janniskilian.basket
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
-import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
-import com.schibsted.spain.barista.interaction.BaristaEditTextInteractions.writeTo
-import com.schibsted.spain.barista.interaction.BaristaKeyboardInteractions.closeKeyboard
-import com.schibsted.spain.barista.interaction.BaristaListInteractions.clickListItem
-import org.hamcrest.Matchers.allOf
-import org.junit.Test
-import org.junit.runner.RunWith
-
-@RunWith(AndroidJUnit4::class)
+/*@RunWith(AndroidJUnit4::class)
 @LargeTest
 class ArticlesUiTest : BaseUiTest() {
 
@@ -78,4 +63,4 @@ class ArticlesUiTest : BaseUiTest() {
     private fun assertArticleIsDisplayed(editedName: String) {
         getArticleItemViewInteraction(editedName).check(matches(isDisplayed()))
     }
-}
+}*/

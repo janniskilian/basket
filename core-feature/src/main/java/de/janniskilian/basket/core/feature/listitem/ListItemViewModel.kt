@@ -1,78 +1,71 @@
 package de.janniskilian.basket.core.feature.listitem
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ShoppingListItemId
-import de.janniskilian.basket.core.util.android.viewmodel.SingleLiveEvent
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ListItemViewModel @Inject constructor(private val dataClient: DataClient) : ViewModel() {
+class ListItemViewModel @Inject constructor(
+    private val dataClient: DataClient,
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
-    private val listItemId = MutableLiveData<ShoppingListItemId>()
+    private val listItemId = MutableStateFlow(
+        ShoppingListItemId(savedStateHandle.get<Long>("listItemId")!!)
+    )
 
-    private val _name = MutableLiveData<String>()
+    private val _name = MutableStateFlow("")
 
-    private val _quantity = MutableLiveData<String>()
+    private val _quantity = MutableStateFlow("")
 
-    private val _comment = MutableLiveData<String>()
+    private val _comment = MutableStateFlow("")
 
-    private val _nameError = MutableLiveData<Boolean>()
+    private val _nameError = MutableStateFlow(false)
 
-    private val _dismiss = SingleLiveEvent<Unit>()
+    private val _dismiss = MutableSharedFlow<Unit>()
 
-    private val shoppingListItem = listItemId.switchMap {
-        dataClient
-            .shoppingListItem
-            .getAsFlow(it)
-            .asLiveData()
-    }
+    private val shoppingListItem = listItemId
+        .flatMapLatest {
+            dataClient
+                .shoppingListItem
+                .getAsFlow(it)
+        }
 
-    val shoppingList = shoppingListItem.switchMap {
-        dataClient
-            .shoppingList
-            .getAsFlow(it.shoppingListId)
-            .asLiveData()
-    }
+    val shoppingList = shoppingListItem
+        .flatMapLatest {
+            dataClient
+                .shoppingList
+                .getAsFlow(it.shoppingListId)
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val name: LiveData<String>
+    val name: StateFlow<String>
         get() = _name
 
-    val quantity: LiveData<String>
+    val quantity: StateFlow<String>
         get() = _quantity
 
-    val comment: LiveData<String>
+    val comment: StateFlow<String>
         get() = _comment
 
-    val nameError: LiveData<Boolean>
+    val nameError: StateFlow<Boolean>
         get() = _nameError
 
-    val dismiss: LiveData<Unit>
+    val dismiss: SharedFlow<Unit>
         get() = _dismiss
-
-    fun setListItemId(id: ShoppingListItemId) {
-        listItemId.value = id
-
-        viewModelScope.launch {
-            dataClient.shoppingListItem
-                .get(id)
-                ?.let {
-                    launch(Dispatchers.Main) {
-                        setName(it.name)
-                        setQuantity(it.quantity)
-                        setComment(it.comment)
-                    }
-                }
-        }
-    }
 
     fun setName(name: String) {
         _name.value = name
@@ -89,11 +82,11 @@ class ListItemViewModel @Inject constructor(private val dataClient: DataClient) 
 
     fun submit() {
         val articleName = name.value
-        if (articleName.isNullOrBlank()) {
+        if (articleName.isBlank()) {
             _nameError.value = true
         } else {
             viewModelScope.launch {
-                shoppingListItem.value?.let {
+                shoppingListItem.collectLatest {
                     dataClient.article.update(
                         it.article.id,
                         articleName,
@@ -106,9 +99,9 @@ class ListItemViewModel @Inject constructor(private val dataClient: DataClient) 
                             comment = comment.value ?: it.comment
                         )
                     )
-                }
 
-                _dismiss.postValue(Unit)
+                    _dismiss.emit(Unit)
+                }
             }
         }
     }

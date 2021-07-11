@@ -100,7 +100,7 @@ private fun OnboardingLayout(
             imageVector = Icons.Outlined.Translate,
             contentDescription = stringResource(R.string.onboarding_language_image_desc),
             tint = MaterialTheme.colors.onSurfaceShade,
-            modifier = Modifier.size(dimensionResource(R.dimen.lead_image_size))
+            modifier = Modifier.size(12.du)
         )
 
         Text(
@@ -181,7 +181,7 @@ private fun LocaleRadioGroup(
                 )
                 Text(
                     text = locale.displayLanguage,
-                    style = MaterialTheme.typography.body1.merge(),
+                    style = MaterialTheme.typography.body1,
                     modifier = Modifier.padding(start = 2.du)
                 )
             }

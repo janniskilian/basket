@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateListViewModel @Inject constructor(
-    private val useCases: CreateListFragmentUseCases,
+    private val useCases: CreateListUseCases,
     private val dataClient: DataClient,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {

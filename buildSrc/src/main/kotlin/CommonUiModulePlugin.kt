@@ -8,10 +8,6 @@ class CommonUiModulePlugin : CommonModulePlugin() {
     override fun apply(project: Project) {
         super.apply(project)
 
-        with(project.plugins) {
-            apply("androidx.navigation.safeargs.kotlin")
-        }
-
         with(project.extensions["android"] as BaseExtension) {
             with(buildFeatures) {
                 viewBinding = true

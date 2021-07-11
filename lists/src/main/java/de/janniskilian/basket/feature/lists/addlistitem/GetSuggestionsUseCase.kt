@@ -9,7 +9,6 @@ import de.janniskilian.basket.core.type.domain.ArticleId
 import de.janniskilian.basket.core.type.domain.ShoppingListId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class GetSuggestionsUseCase(private val dataClient: DataClient) {
@@ -18,11 +17,15 @@ class GetSuggestionsUseCase(private val dataClient: DataClient) {
 
     fun run(
         shoppingListId: ShoppingListId,
-        input: String
+        input: String,
+        pageSize: Int
     ): Flow<PagingData<ShoppingListItemSuggestion>> {
         val parsedInput = parser.parse(input)
-        val articles =
-            dataClient.article.getSuggestionWhereNameLike(parsedInput.name, shoppingListId)
+        val articles = dataClient.article.getSuggestionWhereNameLike(
+            parsedInput.name,
+            shoppingListId,
+            pageSize
+        )
         val amount = parsedInput.quantity.orEmpty() +
                 parsedInput.unit
                     ?.let { " $it" }

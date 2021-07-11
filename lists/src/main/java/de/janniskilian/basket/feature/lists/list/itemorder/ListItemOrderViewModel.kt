@@ -1,40 +1,45 @@
 package de.janniskilian.basket.feature.lists.list.itemorder
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ShoppingList
 import de.janniskilian.basket.core.type.domain.ShoppingListId
-import de.janniskilian.basket.core.util.android.viewmodel.SingleLiveEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ListItemOrderViewModel @Inject constructor(
     private val useCases: ListItemOrderUseCases,
-    private val dataClient: DataClient
+    private val dataClient: DataClient,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private var shoppingList: ShoppingList? = null
 
-    private val _isGroupedByCategory = MutableLiveData<Boolean>()
+    private val _isGroupedByCategory = MutableStateFlow(true)
 
-    private val _dismiss = SingleLiveEvent<Unit>()
+    private val _dismiss = MutableSharedFlow<Unit>()
 
-    val isGroupedByCategory: LiveData<Boolean>
+    val isGroupedByCategory: StateFlow<Boolean>
         get() = _isGroupedByCategory
 
-    val dismiss: LiveData<Unit>
+    val dismiss: SharedFlow<Unit>
         get() = _dismiss
 
-    fun setShoppingListId(id: ShoppingListId) {
+    init {
+        val shoppingListId = ShoppingListId(savedStateHandle.get<Long>("listId")!!)
+
         viewModelScope.launch {
             dataClient
                 .shoppingList
-                .get(id)
+                .get(shoppingListId)
                 ?.let {
                     shoppingList = it
                     setIsGroupedByCategory(it.isGroupedByCategory)
@@ -42,16 +47,16 @@ class ListItemOrderViewModel @Inject constructor(
         }
     }
 
-    fun submit(isGroupedByCategory: Boolean) {
+    fun submit() {
         shoppingList?.let {
             viewModelScope.launch {
-                useCases.updateList(it, isGroupedByCategory)
-                _dismiss.postValue(Unit)
+                useCases.updateList(it, isGroupedByCategory.value)
+                _dismiss.emit(Unit)
             }
         }
     }
 
-    private fun setIsGroupedByCategory(isGroupedByCategory: Boolean) {
+    fun setIsGroupedByCategory(isGroupedByCategory: Boolean) {
         _isGroupedByCategory.value = isGroupedByCategory
     }
 }

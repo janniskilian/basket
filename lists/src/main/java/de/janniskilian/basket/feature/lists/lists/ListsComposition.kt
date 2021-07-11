@@ -139,100 +139,112 @@ private fun ListItem(list: ShoppingList, listClickListener: (list: ShoppingList)
         border = BorderStroke(2.dp, MaterialTheme.colors.strokeShade),
         elevation = 0.5.du,
         onClick = { listClickListener(list) },
+        modifier = Modifier.fillMaxWidth(),
+        content = { ListItemContent(list) }
+    )
+}
+
+@Composable
+private fun ListItemContent(list: ShoppingList) {
+    ConstraintLayout(
         modifier = Modifier.fillMaxWidth()
     ) {
-        ConstraintLayout(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val (nameRef, itemsTotalRef, itemsCheckedRef, moreButtonRef) = createRefs()
+        val (nameRef, itemsTotalRef, itemsCheckedRef, moreButtonRef) = createRefs()
 
-            Text(
-                text = list.name,
-                style = MaterialTheme.typography.h2,
-                color = MaterialTheme.colors.textColorPrimary,
-                modifier = Modifier.constrainAs(nameRef) {
-                    width = Dimension.fillToConstraints
+        ListItemName(
+            name = list.name,
+            modifier = Modifier.constrainAs(nameRef) {
+                width = Dimension.fillToConstraints
 
-                    linkTo(
-                        start = parent.start,
-                        end = moreButtonRef.start,
-                        startMargin = 3.du,
-                        endMargin = 1.du
-                    )
-                    top.linkTo(parent.top, 3.du)
-                }
-            )
-
-            Text(
-                text = LocalContext.current.resources.getQuantityString(
-                    R.plurals.shopping_list_items_total,
-                    list.items.size,
-                    list.items.size
-                ),
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.textColorSecondary,
-                modifier = Modifier.constrainAs(itemsTotalRef) {
-                    width = Dimension.fillToConstraints
-
-                    linkTo(
-                        start = nameRef.start,
-                        end = nameRef.end
-                    )
-                    top.linkTo(nameRef.bottom, 2.du)
-                }
-            )
-
-            Text(
-                text = LocalContext.current.resources.getQuantityString(
-                    R.plurals.shopping_list_items_checked,
-                    list.checkedItemCount,
-                    list.checkedItemCount
-                ),
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.textColorSecondary,
-                modifier = Modifier.constrainAs(itemsCheckedRef) {
-                    width = Dimension.fillToConstraints
-
-                    linkTo(
-                        start = nameRef.start,
-                        end = nameRef.end
-                    )
-                    top.linkTo(itemsTotalRef.bottom, 0.5.du)
-                    bottom.linkTo(parent.bottom, 3.du)
-                }
-            )
-
-            IconButton(
-                onClick = { },
-                modifier = Modifier.constrainAs(moreButtonRef) {
-                    width = Dimension.preferredValue(24.dp)
-                    height = Dimension.preferredValue(24.dp)
-
-                    top.linkTo(parent.top, 1.du)
-                    end.linkTo(parent.end, 1.du)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.MoreVert,
-                    contentDescription = stringResource(R.string.options_menu_button_desc),
-                    tint = MaterialTheme.colors.colorControlNormal
+                linkTo(
+                    start = parent.start,
+                    end = moreButtonRef.start,
+                    startMargin = 3.du,
+                    endMargin = 1.du
                 )
+                top.linkTo(parent.top, 3.du)
             }
+        )
+
+        Text(
+            text = LocalContext.current.resources.getQuantityString(
+                R.plurals.shopping_list_items_total,
+                list.items.size,
+                list.items.size
+            ),
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.textColorSecondary,
+            modifier = Modifier.constrainAs(itemsTotalRef) {
+                width = Dimension.fillToConstraints
+
+                linkTo(
+                    start = nameRef.start,
+                    end = nameRef.end
+                )
+                top.linkTo(nameRef.bottom, 2.du)
+            }
+        )
+
+        Text(
+            text = LocalContext.current.resources.getQuantityString(
+                R.plurals.shopping_list_items_checked,
+                list.checkedItemCount,
+                list.checkedItemCount
+            ),
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.textColorSecondary,
+            modifier = Modifier.constrainAs(itemsCheckedRef) {
+                width = Dimension.fillToConstraints
+
+                linkTo(
+                    start = nameRef.start,
+                    end = nameRef.end
+                )
+                top.linkTo(itemsTotalRef.bottom, 0.5.du)
+                bottom.linkTo(parent.bottom, 3.du)
+            }
+        )
+
+        IconButton(
+            onClick = { },
+            modifier = Modifier.constrainAs(moreButtonRef) {
+                width = Dimension.preferredValue(24.dp)
+                height = Dimension.preferredValue(24.dp)
+
+                top.linkTo(parent.top, 1.du)
+                end.linkTo(parent.end, 1.du)
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.MoreVert,
+                contentDescription = stringResource(R.string.options_menu_button_desc),
+                tint = MaterialTheme.colors.colorControlNormal
+            )
         }
     }
+}
+
+@Composable
+private fun ListItemName(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = name,
+        style = MaterialTheme.typography.h2,
+        color = MaterialTheme.colors.textColorPrimary,
+        modifier = modifier
+    )
 }
 
 @ExperimentalMaterialApi
 @Preview(showBackground = true)
 @Composable
 private fun ListsLayoutPreview() {
-    val categories = (0 until 5).map { createTestCategory() }
-    val articles = (0 until 20).map { createTestArticle(categories.random()) }
+    val categories = (0 until NUM_PREVIEW_CATEGORIES).map { createTestCategory() }
+    val articles = (0 until NUM_PREVIEW_ARTICLES).map { createTestArticle(categories.random()) }
 
     val list = createTestShoppingList()
 
-    val lists = (0 until 5).map {
-        val listItems = (0 until 25).map {
+    val lists = (0 until NUM_PREVIEW_LISTS).map {
+        val listItems = (0 until NUM_PREVIEW_LIST_ITEMS).map {
             createTestShoppingListItem(list, articles.random())
         }
 
@@ -246,3 +258,8 @@ private fun ListsLayoutPreview() {
         )
     }
 }
+
+private const val NUM_PREVIEW_CATEGORIES = 5
+private const val NUM_PREVIEW_ARTICLES = 20
+private const val NUM_PREVIEW_LISTS = 5
+private const val NUM_PREVIEW_LIST_ITEMS = 25

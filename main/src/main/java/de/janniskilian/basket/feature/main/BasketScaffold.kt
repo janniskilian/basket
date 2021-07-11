@@ -24,10 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.systemBarsPadding
+import de.janniskilian.basket.R
 import de.janniskilian.basket.core.ui.compose.BasketColors
 import de.janniskilian.basket.core.ui.compose.BasketTheme
 import de.janniskilian.basket.core.ui.compose.du
@@ -86,7 +88,7 @@ private fun BasketBottomAppBar(
         IconButton(onClick = onHomeButtonClick) {
             Icon(
                 imageVector = Icons.Outlined.Menu,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.navigation_button_desc),
                 tint = MaterialTheme.colors.onPrimary
             )
         }

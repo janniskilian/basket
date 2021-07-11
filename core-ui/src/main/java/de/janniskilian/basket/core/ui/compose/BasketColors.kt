@@ -5,6 +5,7 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+@Suppress("MagicNumber")
 object BasketColors {
 
     private const val SHADE_PRIMARY_ALPHA = 0.87f

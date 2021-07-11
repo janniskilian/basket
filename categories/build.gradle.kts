@@ -10,6 +10,5 @@ dependencies {
     implementation(project(":core-ui"))
     implementation(project(":core-feature"))
 
-    implementation(Dependencies.AndroidX.livedata)
     implementation(Dependencies.AndroidX.viewmodel)
 }

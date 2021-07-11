@@ -7,16 +7,26 @@ import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.Category
-import de.janniskilian.basket.core.ui.navigation.DefaultSearchBarViewModel
-import de.janniskilian.basket.core.ui.navigation.SearchBarViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoriesViewModel @Inject constructor(
     dataClient: DataClient
-) : ViewModel(), SearchBarViewModel by DefaultSearchBarViewModel() {
+) : ViewModel() {
+
+    private val _searchBarVisible = MutableStateFlow(false)
+
+    private val _searchBarInput = MutableStateFlow("")
+
+    val searchBarVisible: StateFlow<Boolean>
+        get() = _searchBarVisible
+
+    val searchBarInput: StateFlow<String>
+        get() = _searchBarInput
 
     val categories: Flow<PagingData<Category>> =
         searchBarInput
@@ -26,6 +36,17 @@ class CategoriesViewModel @Inject constructor(
                     .get(it, PAGE_SIZE)
             }
             .cachedIn(viewModelScope)
+
+    fun setSearchBarVisible(isVisible: Boolean) {
+        _searchBarVisible.value = isVisible
+        if (!isVisible) {
+            setSearchBarInput("")
+        }
+    }
+
+    fun setSearchBarInput(input: String) {
+        _searchBarInput.value = input
+    }
 
     companion object {
 

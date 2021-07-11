@@ -26,6 +26,4 @@
     <string name="shopping_lists_lead_image_desc">Icon that symbolises a shopping list</string>
     <string name="options_menu_button_desc">Options menu button</string>
 
-    <dimen name="shopping_list_item_spacing">@dimen/two</dimen>
-
 </resources>

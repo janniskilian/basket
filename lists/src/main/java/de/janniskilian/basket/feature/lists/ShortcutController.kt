@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
-import androidx.core.graphics.drawable.IconCompat
 import de.janniskilian.basket.core.type.domain.ShoppingList
 import de.janniskilian.basket.core.type.domain.ShoppingListId
 import de.janniskilian.basket.core.util.android.getInt
@@ -48,16 +47,16 @@ class ShortcutController(private val context: Context) {
         shortcutId: String,
         shoppingList: ShoppingList
     ): ShortcutInfoCompat {
-        val icon = IconCompat.createWithResource(
+        /*val icon = IconCompat.createWithResource(
             context,
             R.drawable.ic_shortcut_list
-        )
+        )*/
 
         return ShortcutInfoCompat
             .Builder(context, shortcutId)
             .setShortLabel(shoppingList.name)
             .setLongLabel(context.getString(R.string.shortcut_list_long_label, shoppingList.name))
-            .setIcon(icon)
+            //.setIcon(icon)
             .setIntent(
                 Intent().apply {
                     component = ComponentName(context, MAIN_ACTIVITY_CLASS)

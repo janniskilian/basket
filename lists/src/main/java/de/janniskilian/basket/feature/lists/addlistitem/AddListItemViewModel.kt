@@ -42,7 +42,7 @@ class AddListItemViewModel @Inject constructor(
         _input
             .flatMapLatest { inputValue ->
                 shoppingListId.flatMapConcat {
-                    getSuggestionsUseCase.run(it, inputValue)
+                    getSuggestionsUseCase.run(it, inputValue, PAGE_SIZE)
                 }
             }
             .cachedIn(viewModelScope)
@@ -67,5 +67,10 @@ class AddListItemViewModel @Inject constructor(
 
     fun inputDoneButtonClicked() {
         //items.value?.firstOrNull()?.let(::suggestionItemClicked)
+    }
+
+    companion object {
+
+        private const val PAGE_SIZE = 50
     }
 }

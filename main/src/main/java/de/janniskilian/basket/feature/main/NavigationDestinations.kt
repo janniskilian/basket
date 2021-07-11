@@ -15,7 +15,7 @@ object OnboardingDestination : NavigationDestination {
 
     @ExperimentalAnimationApi
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
         OnboardingContent()
     }
 }
@@ -26,7 +26,7 @@ object GroupsNavigationDestination : NavigationDestination {
 
     @ExperimentalMaterialApi
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
         GroupsContent()
     }
 }
@@ -36,7 +36,8 @@ object SettingsNavigationDestination : NavigationDestination {
     override val routeScheme get() = "settings"
 
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
+        // UI will be added later.
     }
 }
 
@@ -45,6 +46,7 @@ object HelpAndFeedbackNavigationDestination : NavigationDestination {
     override val routeScheme get() = "helpAndFeedback"
 
     @Composable
-    override fun Content(arguments: Bundle?) {
+    override fun Content() {
+        // UI will be added later.
     }
 }

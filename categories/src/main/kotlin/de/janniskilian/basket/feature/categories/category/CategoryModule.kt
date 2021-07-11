@@ -11,6 +11,6 @@ import de.janniskilian.basket.core.data.dataclient.DataClient
 class CategoryModule {
 
     @Provides
-    fun provideCategoryFragmentUseCases(dataClient: DataClient): CategoryUseCases =
+    fun provideCategoryUseCases(dataClient: DataClient): CategoryUseCases =
         CategoryUseCases(dataClient)
 }

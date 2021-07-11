@@ -25,7 +25,4 @@
     <string name="action_menu_remove_checked_items">Remove checked items</string>
     <string name="action_menu_remove_all_items">Remove all items</string>
 
-    <dimen name="list_spacing_default">@dimen/four</dimen>
-    <dimen name="list_spacing_compact">@dimen/one</dimen>
-
 </resources>

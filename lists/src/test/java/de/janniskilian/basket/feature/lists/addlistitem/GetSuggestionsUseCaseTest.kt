@@ -16,6 +16,7 @@ import de.janniskilian.basket.core.type.domain.ArticleSuggestion
 import de.janniskilian.basket.core.type.domain.Category
 import de.janniskilian.basket.core.type.domain.CategoryId
 import de.janniskilian.basket.core.type.domain.ShoppingListId
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
@@ -23,6 +24,7 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Test
 import kotlin.test.assertEquals
 
+@ExperimentalCoroutinesApi
 class GetSuggestionsUseCaseTest {
 
     private val apples = Article(
@@ -60,7 +62,7 @@ class GetSuggestionsUseCaseTest {
 
     fun useCase(hasExactMatch: Boolean): GetSuggestionsUseCase {
         val articleDataClient: ArticleDataClient = mock {
-            on { getSuggestionWhereNameLike(any(), ShoppingListId(any())) } doReturn flowOf(
+            on { getSuggestionWhereNameLike(any(), ShoppingListId(any()), any()) } doReturn flowOf(
                 PagingData.from(articleDataClientResult)
             )
 
@@ -95,7 +97,7 @@ class GetSuggestionsUseCaseTest {
                 )
             ),
             useCase(hasExactMatch = false)
-                .run(shoppingListId, "")
+                .run(shoppingListId, "", PAGE_SIZE)
                 .single()
                 .collectData()
         )
@@ -116,7 +118,7 @@ class GetSuggestionsUseCaseTest {
                 isExistingArticle = false
             ),
             useCase(hasExactMatch = false)
-                .run(shoppingListId, "apple")
+                .run(shoppingListId, "apple", PAGE_SIZE)
                 .single()
                 .collectData()
                 .first()
@@ -129,7 +131,7 @@ class GetSuggestionsUseCaseTest {
                 isExistingArticle = true
             ),
             useCase(hasExactMatch = true)
-                .run(shoppingListId, apples.name)
+                .run(shoppingListId, apples.name, PAGE_SIZE)
                 .single()
                 .collectData()
                 .first()
@@ -172,37 +174,51 @@ class GetSuggestionsUseCaseTest {
                 )
             ),
             useCase(hasExactMatch = false)
-                .run(shoppingListId, "a 2kg")
+                .run(shoppingListId, "a 2kg", PAGE_SIZE)
                 .single()
                 .collectData()
         )
     }
 
-    suspend fun <T : Any> PagingData<T>.collectData(): List<T> {
-        val differCallback = object : DifferCallback {
-            override fun onChanged(position: Int, count: Int) {}
-            override fun onInserted(position: Int, count: Int) {}
-            override fun onRemoved(position: Int, count: Int) {}
-        }
-        val items = mutableListOf<T>()
-        val differ = object : PagingDataDiffer<T>(differCallback, TestCoroutineDispatcher()) {
+    companion object {
 
-            override suspend fun presentNewList(
-                previousList: NullPaddedList<T>,
-                newList: NullPaddedList<T>,
-                newCombinedLoadStates: CombinedLoadStates,
-                lastAccessedIndex: Int,
-                onListPresentable: () -> Unit
-            ): Int? {
-                for (idx in 0 until newList.size)
-                    items.add(newList.getFromStorage(idx))
-
-                onListPresentable()
-
-                return null
-            }
-        }
-        differ.collectFrom(this)
-        return items
+        private const val PAGE_SIZE = 50
     }
+}
+
+@ExperimentalCoroutinesApi
+suspend fun <T : Any> PagingData<T>.collectData(): List<T> {
+    val differCallback = object : DifferCallback {
+        override fun onChanged(position: Int, count: Int) {
+            // No implementation necessary.
+        }
+
+        override fun onInserted(position: Int, count: Int) {
+            // No implementation necessary.
+        }
+
+        override fun onRemoved(position: Int, count: Int) {
+            // No implementation necessary.
+        }
+    }
+    val items = mutableListOf<T>()
+    val differ = object : PagingDataDiffer<T>(differCallback, TestCoroutineDispatcher()) {
+
+        override suspend fun presentNewList(
+            previousList: NullPaddedList<T>,
+            newList: NullPaddedList<T>,
+            newCombinedLoadStates: CombinedLoadStates,
+            lastAccessedIndex: Int,
+            onListPresentable: () -> Unit
+        ): Int? {
+            for (idx in 0 until newList.size)
+                items.add(newList.getFromStorage(idx))
+
+            onListPresentable()
+
+            return null
+        }
+    }
+    differ.collectFrom(this)
+    return items
 }
