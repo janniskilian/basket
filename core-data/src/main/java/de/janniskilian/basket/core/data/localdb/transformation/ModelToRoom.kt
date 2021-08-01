@@ -12,34 +12,34 @@ import de.janniskilian.basket.core.util.withoutSpecialChars
 
 fun modelToRoom(category: Category): RoomCategory =
     RoomCategory(
-        category.name,
-        category.name.withoutSpecialChars(),
-        category.id.value
+        name = category.name,
+        searchName = category.name.withoutSpecialChars(),
+        id = category.id.value
     )
 
 fun modelToRoom(article: Article): RoomArticle =
     RoomArticle(
-        article.name,
-        article.name.withoutSpecialChars(),
-        article.category?.id?.value,
-        article.id.value
+        name = article.name,
+        searchName = article.name.withoutSpecialChars(),
+        categoryId = article.category?.id?.value,
+        id = article.id.value
     )
 
 fun modelToRoom(shoppingList: ShoppingList): RoomShoppingList =
     RoomShoppingList(
-        shoppingList.name,
-        shoppingList.name.withoutSpecialChars(),
-        shoppingList.color,
-        shoppingList.isGroupedByCategory,
-        shoppingList.id.value
+        name = shoppingList.name,
+        searchName = shoppingList.name.withoutSpecialChars(),
+        color = shoppingList.color,
+        isGroupedByCategory = shoppingList.isGroupedByCategory,
+        id = shoppingList.id.value
     )
 
 fun modelToRoom(shoppingListItem: ShoppingListItem): RoomShoppingListItem =
     RoomShoppingListItem(
-        shoppingListItem.shoppingListId.value,
-        shoppingListItem.article.id.value,
-        shoppingListItem.quantity,
-        shoppingListItem.comment,
-        shoppingListItem.isChecked,
-        shoppingListItem.id.value
+        shoppingListId = shoppingListItem.shoppingListId.value,
+        articleId = shoppingListItem.article.id.value,
+        quantity = shoppingListItem.quantity,
+        comment = shoppingListItem.comment,
+        isChecked = shoppingListItem.isChecked,
+        id = shoppingListItem.id.value
     )

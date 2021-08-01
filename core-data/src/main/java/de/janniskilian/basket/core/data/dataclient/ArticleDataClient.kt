@@ -20,11 +20,16 @@ interface ArticleDataClient {
 
     suspend fun get(articleId: ArticleId): Article?
 
-    fun getSuggestionWhereNameLike(
+    fun getSuggestionsWhereNameLike(
         name: String,
         shoppingListId: ShoppingListId,
         pageSize: Int
     ): Flow<PagingData<ArticleSuggestion>>
+
+    suspend fun getFirstSuggestionWhereNameLike(
+        name: String,
+        shoppingListId: ShoppingListId
+    ): ArticleSuggestion?
 
     fun getWhereNameLike(name: String = "", pageSize: Int): Flow<PagingData<Article>>
 

@@ -13,7 +13,7 @@ buildscript {
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt") version "1.18.0-RC1"
+    id("io.gitlab.arturbosch.detekt") version "1.18.0-RC2"
     id("com.github.ben-manes.versions") version "0.39.0"
 }
 
@@ -35,7 +35,7 @@ detekt {
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-    jvmTarget = "1.8"
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
     include("**/*.kt")
     include("**/*.kts")
     exclude("resources/")

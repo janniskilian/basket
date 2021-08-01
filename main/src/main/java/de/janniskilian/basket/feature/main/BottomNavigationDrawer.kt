@@ -1,33 +1,15 @@
 package de.janniskilian.basket.feature.main
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomDrawerState
-import androidx.compose.material.ButtonColors
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import de.janniskilian.basket.core.ui.compose.BasketTheme
-import de.janniskilian.basket.core.ui.compose.colorControlNormal
-import de.janniskilian.basket.core.ui.compose.du
-import de.janniskilian.basket.core.ui.compose.primaryShade
+import de.janniskilian.basket.core.ui.compose.component.BottomDrawerColumn
+import de.janniskilian.basket.core.ui.compose.component.BottomDrawerItem
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
@@ -45,97 +27,37 @@ fun BottomNavigationDrawer(
         }
     }
 
-    BottomNavigationDrawerColumn(currentRoute) {
-        coroutineScope.launch {
-            bottomDrawerState.close()
-        }
+    BottomNavigationDrawerLayout(
+        currentRoute = currentRoute,
+        onItemClick = {
+            coroutineScope.launch {
+                bottomDrawerState.close()
+            }
 
-        onItemClick(it)
-    }
+            onItemClick(it)
+        }
+    )
 }
 
 @ExperimentalMaterialApi
 @Composable
-private fun BottomNavigationDrawerColumn(
+private fun BottomNavigationDrawerLayout(
     currentRoute: String?,
     onItemClick: (navigationRoot: NavigationRoot) -> Unit
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(1.du),
-        modifier = Modifier.padding(
-            horizontal = 1.du,
-            vertical = 2.du
-        )
-    ) {
-        val navigationRoots = NavigationRoot.values()
-        navigationRoots.forEach {
-            BottomNavigationDrawerItem(
-                it,
-                it.destination.routeScheme == currentRoute
-            ) {
-                onItemClick(it)
+    BottomDrawerColumn {
+        NavigationRoot
+            .values()
+            .forEach {
+                BottomDrawerItem(
+                    it.icon,
+                    stringResource(it.nameResId),
+                    it.destination.routeScheme == currentRoute
+                ) {
+                    onItemClick(it)
+                }
             }
-        }
     }
-}
-
-@ExperimentalMaterialApi
-@Composable
-private fun BottomNavigationDrawerItem(
-    navigationRoot: NavigationRoot,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    TextButton(
-        modifier = Modifier.fillMaxWidth(),
-        colors = BottomNavigationDrawerItemColor(isSelected),
-        onClick = { if (!isSelected) onClick() }
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val iconColor = if (isSelected) {
-                MaterialTheme.colors.primary
-            } else {
-                MaterialTheme.colors.colorControlNormal
-            }
-            val textColor = if (isSelected) {
-                MaterialTheme.colors.primary
-            } else {
-                MaterialTheme.colors.onSurface
-            }
-
-            Icon(
-                imageVector = navigationRoot.icon,
-                contentDescription = navigationRoot.name,
-                tint = iconColor
-            )
-
-            Text(
-                text = stringResource(navigationRoot.nameResId),
-                color = textColor,
-                modifier = Modifier.padding(start = 3.du)
-            )
-        }
-    }
-}
-
-private class BottomNavigationDrawerItemColor(private val isSelected: Boolean) : ButtonColors {
-
-    @Composable
-    override fun backgroundColor(enabled: Boolean): State<Color> =
-        rememberUpdatedState(
-            if (isSelected) {
-                MaterialTheme.colors.primaryShade
-            } else {
-                Color.Transparent
-            }
-        )
-
-    @Composable
-    override fun contentColor(enabled: Boolean): State<Color> =
-        rememberUpdatedState(MaterialTheme.colors.primary)
 }
 
 @ExperimentalMaterialApi
@@ -143,7 +65,7 @@ private class BottomNavigationDrawerItemColor(private val isSelected: Boolean) :
 @Composable
 fun BottomNavigationDrawerPreview() {
     BasketTheme {
-        BottomNavigationDrawerColumn(
+        BottomNavigationDrawerLayout(
             currentRoute = NavigationRoot.ARTICLES.name,
             onItemClick = {}
         )

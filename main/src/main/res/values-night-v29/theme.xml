@@ -3,9 +3,6 @@
 
     <style name="Base.Theme.Basket" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/background</item>
-        <item name="android:windowLightStatusBar">true</item>
     </style>
-
-    <style name="Theme.Basket" parent="Base.Theme.Basket"/>
 
 </resources>

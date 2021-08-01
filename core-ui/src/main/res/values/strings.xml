@@ -19,6 +19,8 @@
     <string name="lead_image_desc">Background image</string>
     <string name="category_checkmark_icon_desc">Checkmark icon</string>
 
+    <string name="navigation_button_desc">Open navigation menu</string>
+
     <string name="apply">Apply</string>
     <string name="undo">Undo</string>
 

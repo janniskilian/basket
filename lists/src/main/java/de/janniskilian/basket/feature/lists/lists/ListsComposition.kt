@@ -31,7 +31,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import de.janniskilian.basket.core.type.domain.ShoppingList
@@ -122,7 +121,10 @@ private fun ListsColumn(
             verticalArrangement = Arrangement.spacedBy(2.du),
             contentPadding = PaddingValues(2.du)
         ) {
-            items(listItems) { list ->
+            items(
+                items = listItems,
+                key = { it.id.value }
+            ) { list ->
                 if (list != null) {
                     ListItem(list, listClickListener)
                 }

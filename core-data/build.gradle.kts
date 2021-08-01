@@ -13,9 +13,10 @@ dependencies {
     implementation(project(":core-type"))
     implementation(project(":core-util"))
 
-    implementation(Dependencies.Compose.paging)
+    implementation(Dependencies.AndroidX.paging)
 
     implementation(Dependencies.AndroidX.roomRuntime)
     implementation(Dependencies.AndroidX.roomKtx)
+    implementation(Dependencies.AndroidX.roomPaging)
     kapt(Dependencies.AndroidX.roomCompiler)
 }

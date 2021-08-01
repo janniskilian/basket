@@ -17,14 +17,37 @@ object Dependencies {
     object AndroidX {
 
         const val core = "androidx.core:core-ktx:1.6.0"
+
         const val appcompat = "androidx.appcompat:appcompat:1.3.0"
-        const val activity = "androidx.activity:activity-ktx:1.3.0-rc01"
+
+        const val activity = "androidx.activity:activity-ktx:1.3.0"
+
+        const val activityCompose = "androidx.activity:activity-compose:1.3.0"
+
         const val viewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.LIFECYCLE}"
+
+        const val viewmodelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
+
         const val roomRuntime = "androidx.room:room-runtime:${Versions.ROOM}"
+
         const val roomKtx = "androidx.room:room-ktx:${Versions.ROOM}"
+
         const val roomCompiler = "androidx.room:room-compiler:${Versions.ROOM}"
-        const val datastorePref = "androidx.datastore:datastore-preferences:1.0.0-rc01"
+
+        const val roomPaging = "androidx.room:room-paging:${Versions.ROOM}"
+
+        const val datastorePref = "androidx.datastore:datastore-preferences:1.0.0-rc02"
+
         const val preference = "androidx.preference:preference-ktx:1.1.1"
+
+        const val navigation = "androidx.navigation:navigation-compose:2.4.0-alpha05"
+
+        const val hilt = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
+
+        const val paging = "androidx.paging:paging-compose:1.0.0-alpha12"
+
+        const val constraintlayout =
+            "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
     }
 
     object Compose {
@@ -37,7 +60,7 @@ object Dependencies {
 
         const val ui = "androidx.compose.ui:ui:${Versions.COMPOSE}"
 
-        const val uiTooling = "androidx.compose.ui:ui-tooling:1.0.0-beta09"
+        const val uiTooling = "androidx.compose.ui:ui-tooling:${Versions.COMPOSE}"
 
         const val uiPreview = "androidx.compose.ui:ui-tooling-preview:${Versions.COMPOSE}"
 
@@ -49,26 +72,12 @@ object Dependencies {
         const val materialIconsExtended =
             "androidx.compose.material:material-icons-extended:${Versions.COMPOSE}"
 
-        const val viewmodel = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
-
-        const val navigation = "androidx.navigation:navigation-compose:2.4.0-alpha04"
-
-        const val hilt = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
-
-        const val activity = "androidx.activity:activity-compose:1.3.0-rc01"
-
-        const val paging = "androidx.paging:paging-compose:1.0.0-alpha11"
-
-        const val constraintlayout =
-            "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha08"
-
         const val accompanistInsets =
             "com.google.accompanist:accompanist-insets:${Versions.ACCOMPANIST}"
 
         const val uiTestJunit = "androidx.compose.ui:ui-test-junit4:${Versions.COMPOSE}"
 
         const val uiTestManifest = "androidx.compose.ui:ui-test-manifest:${Versions.COMPOSE}"
-
     }
 
     object Hilt {
@@ -80,8 +89,6 @@ object Dependencies {
     }
 
     const val timber = "com.jakewharton.timber:timber:4.7.1"
-
-    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.5"
 
     object Testing {
 
@@ -95,7 +102,7 @@ object Dependencies {
         const val core = "androidx.test:core:1.4.0"
         const val runner = "androidx.test:runner:1.4.0"
         const val rules = "androidx.test:rules:1.4.0"
-        const val junit = "androidx.test.ext:junit:1.1.1"
+        const val junit = "androidx.test.ext:junit:1.1.3"
         const val room = "androidx.room:room-testing:${Versions.ROOM}"
         const val hilt = "com.google.dagger:hilt-android-testing:${Versions.HILT}"
         const val hiltCompiler = "com.google.dagger:hilt-android-compiler:${Versions.HILT}"
@@ -105,7 +112,7 @@ object Dependencies {
     object GradlePlugins {
 
         const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}"
-        const val android = "com.android.tools.build:gradle:7.1.0-alpha03"
-        const val hilt = "com.google.dagger:hilt-android-gradle-plugin:2.37"
+        const val android = "com.android.tools.build:gradle:7.1.0-alpha05"
+        const val hilt = "com.google.dagger:hilt-android-gradle-plugin:${Versions.HILT}"
     }
 }

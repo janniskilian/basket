@@ -7,16 +7,16 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.janniskilian.basket.core.type.domain.ShoppingListId
-import de.janniskilian.basket.core.util.sortedByName
 import de.janniskilian.basket.feature.lists.AddListItemNavigationDestination
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,18 +38,16 @@ class AddListItemViewModel @Inject constructor(
     val input: StateFlow<String>
         get() = _input
 
+    @FlowPreview
+    @ExperimentalCoroutinesApi
     val items: Flow<PagingData<ShoppingListItemSuggestion>> =
         _input
             .flatMapLatest { inputValue ->
                 shoppingListId.flatMapConcat {
-                    getSuggestionsUseCase.run(it, inputValue, PAGE_SIZE)
+                    getSuggestionsUseCase.getSuggestions(it, inputValue, PAGE_SIZE)
                 }
             }
             .cachedIn(viewModelScope)
-
-    fun setShoppingListId(id: ShoppingListId) {
-        shoppingListId.value = id
-    }
 
     fun setInput(input: String) {
         _input.value = input
@@ -66,7 +64,18 @@ class AddListItemViewModel @Inject constructor(
     }
 
     fun inputDoneButtonClicked() {
-        //items.value?.firstOrNull()?.let(::suggestionItemClicked)
+        if (input.value.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val firstSuggestion = getSuggestionsUseCase.getFirstSuggestion(
+                    shoppingListId.value,
+                    input.value
+                )
+
+                if (firstSuggestion != null) {
+                    listItemSuggestionClickedUseCase.run(shoppingListId.value, firstSuggestion)
+                }
+            }
+        }
     }
 
     companion object {

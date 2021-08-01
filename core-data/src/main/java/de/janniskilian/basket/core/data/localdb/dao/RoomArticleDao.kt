@@ -22,7 +22,7 @@ interface RoomArticleDao {
 
     @Transaction
     @Query("SELECT * FROM article WHERE id = :id")
-    fun selectSuggestionWhereNameLike(id: Long): RoomArticleResult?
+    fun select(id: Long): RoomArticleResult?
 
     @Query(
         """SELECT DISTINCT article.id AS articleId, article.name AS articleName,
@@ -39,10 +39,31 @@ interface RoomArticleDao {
 			WHERE article.searchName LIKE :searchName
             ORDER BY article.searchName"""
     )
-    fun selectSuggestionWhereNameLike(
+    fun selectSuggestionsWhereNameLike(
         searchName: String,
         shoppingListId: Long
     ): PagingSource<Int, RoomArticleSuggestionResult>
+
+    @Query(
+        """SELECT DISTINCT article.id AS articleId, article.name AS articleName,
+			category.id AS category_id, category.name AS category_name,
+            category.searchName AS category_searchName,
+			listItem.shoppingListId AS shoppingListId
+			FROM article
+			LEFT OUTER JOIN category
+			ON article.categoryId = category.id
+			LEFT OUTER JOIN
+			(SELECT articleId, shoppingListId FROM shoppingListItem
+			WHERE shoppingListId = :shoppingListId) AS listItem
+			ON article.id = listItem.articleId
+			WHERE article.searchName LIKE :searchName
+            ORDER BY article.searchName
+            LIMIT 1"""
+    )
+    fun selectFirstSuggestionWhereNameLike(
+        searchName: String,
+        shoppingListId: Long
+    ): RoomArticleSuggestionResult?
 
     @Transaction
     @Query("SELECT * FROM article WHERE searchName LIKE :searchName ORDER BY searchName")

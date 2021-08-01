@@ -6,12 +6,14 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.janniskilian.basket.core.data.dataclient.DataClient
 import de.janniskilian.basket.core.type.domain.ShoppingListItemId
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -37,14 +39,18 @@ class ListItemViewModel @Inject constructor(
 
     private val _dismiss = MutableSharedFlow<Unit>()
 
+    @ExperimentalCoroutinesApi
     private val shoppingListItem = listItemId
         .flatMapLatest {
             dataClient
                 .shoppingListItem
                 .getAsFlow(it)
         }
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
+    @ExperimentalCoroutinesApi
     val shoppingList = shoppingListItem
+        .filterNotNull()
         .flatMapLatest {
             dataClient
                 .shoppingList
@@ -86,22 +92,24 @@ class ListItemViewModel @Inject constructor(
             _nameError.value = true
         } else {
             viewModelScope.launch {
-                shoppingListItem.collectLatest {
-                    dataClient.article.update(
-                        it.article.id,
-                        articleName,
-                        it.article.category?.id
-                    )
-
-                    dataClient.shoppingListItem.update(
-                        it.copy(
-                            quantity = quantity.value ?: it.quantity,
-                            comment = comment.value ?: it.comment
+                shoppingListItem
+                    .first { it != null }
+                    ?.let {
+                        dataClient.article.update(
+                            it.article.id,
+                            articleName,
+                            it.article.category?.id
                         )
-                    )
 
-                    _dismiss.emit(Unit)
-                }
+                        dataClient.shoppingListItem.update(
+                            it.copy(
+                                quantity = quantity.value,
+                                comment = comment.value
+                            )
+                        )
+
+                        _dismiss.emit(Unit)
+                    }
             }
         }
     }

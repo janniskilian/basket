@@ -32,6 +32,7 @@ import com.google.accompanist.insets.systemBarsPadding
 import de.janniskilian.basket.R
 import de.janniskilian.basket.core.ui.compose.BasketColors
 import de.janniskilian.basket.core.ui.compose.BasketTheme
+import de.janniskilian.basket.core.ui.compose.component.BasketBottomAppBar
 import de.janniskilian.basket.core.ui.compose.du
 
 
@@ -43,13 +44,6 @@ fun BasketScaffold(
     content: @Composable (paddingValues: PaddingValues) -> Unit
 ) {
     Scaffold(
-        bottomBar = {
-            BasketBottomAppBar(
-                title = "",
-                backgroundColor = MaterialTheme.colors.primarySurface,
-                onHomeButtonClick = onHomeButtonClick
-            )
-        },
         floatingActionButtonPosition = FabPosition.End,
         modifier = Modifier.systemBarsPadding(),
         content = content
@@ -70,34 +64,6 @@ fun Modifier.contentImePadding(calculateBottomPadding: Dp): Modifier = composed 
                     .coerceAtLeast(0).toDp()
             )
             //}
-        )
-    }
-}
-
-@ExperimentalMaterialApi
-@Composable
-private fun BasketBottomAppBar(
-    title: String,
-    backgroundColor: Color,
-    onHomeButtonClick: () -> Unit
-) {
-    BottomAppBar(
-        backgroundColor = backgroundColor,
-        contentColor = Color.White
-    ) {
-        IconButton(onClick = onHomeButtonClick) {
-            Icon(
-                imageVector = Icons.Outlined.Menu,
-                contentDescription = stringResource(R.string.navigation_button_desc),
-                tint = MaterialTheme.colors.onPrimary
-            )
-        }
-
-        Text(
-            text = title,
-            style = MaterialTheme.typography.h2,
-            color = MaterialTheme.colors.onPrimary,
-            modifier = Modifier.padding(horizontal = 3.du)
         )
     }
 }

@@ -63,11 +63,7 @@ fun OnboardingContent(viewModel: OnboardingViewModel = hiltViewModel()) {
 
     LaunchedEffect(viewModel.startList) {
         viewModel.startList.collect {
-            navController.navigate(ListsNavigationDestination.routeScheme) {
-                popUpTo(OnboardingDestination.routeScheme) {
-                    inclusive = true
-                }
-            }
+            navController.popBackStack()
         }
     }
 

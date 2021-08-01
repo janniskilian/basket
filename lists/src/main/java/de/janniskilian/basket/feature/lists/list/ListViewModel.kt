@@ -10,12 +10,12 @@ import de.janniskilian.basket.core.type.domain.ShoppingListItem
 import de.janniskilian.basket.feature.lists.ListNavigationDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -25,19 +25,19 @@ class ListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val shoppingListId = MutableStateFlow(
-        ShoppingListId(savedStateHandle.get<Long>(ListNavigationDestination.LIST_ID_PARAM)!!)
+    private val shoppingListId = ShoppingListId(
+        savedStateHandle.get<Long>(ListNavigationDestination.LIST_ID_PARAM)!!
     )
 
+    private var removedListItems: List<ShoppingListItem>? = null
     private var _listItemsRemoved = MutableSharedFlow<List<ShoppingListItem>>()
+
+    private var listItemsSetChecked: List<ShoppingListItem>? = null
     private var _allListItemsSetIsChecked = MutableSharedFlow<List<ShoppingListItem>>()
 
-    val shoppingList = shoppingListId
-        .flatMapLatest {
-            dataClient
-                .shoppingList
-                .getAsFlow(it)
-        }
+    val shoppingList = dataClient
+        .shoppingList
+        .getAsFlow(shoppingListId)
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val listItemsRemoved: SharedFlow<List<ShoppingListItem>>
@@ -55,13 +55,14 @@ class ListViewModel @Inject constructor(
     }
 
     fun setAllListItemsChecked(isChecked: Boolean) {
-        shoppingList.value?.let { list ->
-            if (!list.isEmpty) {
-                viewModelScope.launch {
+        viewModelScope.launch {
+            shoppingList.firstOrNull { it != null }?.let { list ->
+                Timber.i("setAllListItemsChecked=$list")
+                if (!list.isEmpty) {
                     dataClient.shoppingListItem.setAllCheckedForShoppingList(list.id, isChecked)
-                    _allListItemsSetIsChecked.emit(
-                        list.items.filter { it.isChecked != isChecked }
-                    )
+                    val items = list.items.filter { it.isChecked != isChecked }
+                    listItemsSetChecked = items
+                    _allListItemsSetIsChecked.emit(items)
                 }
             }
         }
@@ -70,15 +71,18 @@ class ListViewModel @Inject constructor(
     fun removeListItem(listItem: ShoppingListItem) {
         viewModelScope.launch {
             dataClient.shoppingListItem.delete(listItem.shoppingListId, listItem.article.id)
-            _listItemsRemoved.emit(listOf(listItem))
+            val item = listOf(listItem)
+            removedListItems = item
+            _listItemsRemoved.emit(item)
         }
     }
 
     fun removeAllListItems() {
-        shoppingList.value?.let {
-            if (!it.isEmpty) {
-                viewModelScope.launch {
+        viewModelScope.launch {
+            shoppingList.firstOrNull { it != null }?.let {
+                if (!it.isEmpty) {
                     dataClient.shoppingListItem.deleteAllForShoppingList(it.id)
+                    removedListItems = it.items
                     _listItemsRemoved.emit(it.items)
                 }
             }
@@ -86,11 +90,12 @@ class ListViewModel @Inject constructor(
     }
 
     fun removeAllCheckedListItems() {
-        shoppingList.value?.let { list ->
-            if (!list.isEmpty) {
-                viewModelScope.launch {
+        viewModelScope.launch {
+            shoppingList.firstOrNull { it != null }?.let { list ->
+                if (!list.isEmpty) {
                     dataClient.shoppingListItem.deleteAllCheckedForShoppingList(list.id)
                     val checkedListItems = list.items.filter { it.isChecked }
+                    removedListItems = checkedListItems
                     _listItemsRemoved.emit(checkedListItems)
                 }
             }
@@ -98,18 +103,16 @@ class ListViewModel @Inject constructor(
     }
 
     fun undoRemoveListItems() {
-        /*listItemsRemoved.value?.let {
-            viewModelScope.launch {
-                dataClient.shoppingListItem.create(it)
-            }
-        }*/
+        viewModelScope.launch {
+            dataClient.shoppingListItem.create(removedListItems.orEmpty())
+            removedListItems = null
+        }
     }
 
     fun undoSetAllListItemsIsChecked() {
-        /*allListItemsSetToChecked.value?.let {
-            viewModelScope.launch {
-                dataClient.shoppingListItem.update(it)
-            }
-        }*/
+        viewModelScope.launch {
+            dataClient.shoppingListItem.update(listItemsSetChecked.orEmpty())
+            listItemsSetChecked = null
+        }
     }
 }

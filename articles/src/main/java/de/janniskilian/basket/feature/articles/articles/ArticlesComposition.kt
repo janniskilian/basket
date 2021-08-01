@@ -48,7 +48,10 @@ private fun ArticlesLayout(
     val articleItems = articlesFlow.collectAsLazyPagingItems()
 
     LazyColumn {
-        itemsIndexed(articleItems) { i, article ->
+        itemsIndexed(
+            items = articleItems,
+            key = { _, item -> item.id.value }
+        ) { i, article ->
             if (article != null) {
                 ArticleItem(article, articleClickListener)
 

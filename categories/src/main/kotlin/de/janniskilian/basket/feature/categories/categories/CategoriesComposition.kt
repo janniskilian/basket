@@ -48,7 +48,10 @@ private fun CategoriesLayout(
     val categoryItems = categoriesFlow.collectAsLazyPagingItems()
 
     LazyColumn {
-        itemsIndexed(categoryItems) { i, category ->
+        itemsIndexed(
+            items = categoryItems,
+            key = { _, item -> item.id.value }
+        ) { i, category ->
             if (category != null) {
                 CategoryItem(category, categoryClickListener)
 

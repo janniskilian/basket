@@ -62,7 +62,7 @@ class GetSuggestionsUseCaseTest {
 
     fun useCase(hasExactMatch: Boolean): GetSuggestionsUseCase {
         val articleDataClient: ArticleDataClient = mock {
-            on { getSuggestionWhereNameLike(any(), ShoppingListId(any()), any()) } doReturn flowOf(
+            on { getSuggestionsWhereNameLike(any(), ShoppingListId(any()), any()) } doReturn flowOf(
                 PagingData.from(articleDataClientResult)
             )
 
@@ -97,7 +97,7 @@ class GetSuggestionsUseCaseTest {
                 )
             ),
             useCase(hasExactMatch = false)
-                .run(shoppingListId, "", PAGE_SIZE)
+                .getSuggestions(shoppingListId, "", PAGE_SIZE)
                 .single()
                 .collectData()
         )
@@ -118,7 +118,7 @@ class GetSuggestionsUseCaseTest {
                 isExistingArticle = false
             ),
             useCase(hasExactMatch = false)
-                .run(shoppingListId, "apple", PAGE_SIZE)
+                .getSuggestions(shoppingListId, "apple", PAGE_SIZE)
                 .single()
                 .collectData()
                 .first()
@@ -131,7 +131,7 @@ class GetSuggestionsUseCaseTest {
                 isExistingArticle = true
             ),
             useCase(hasExactMatch = true)
-                .run(shoppingListId, apples.name, PAGE_SIZE)
+                .getSuggestions(shoppingListId, apples.name, PAGE_SIZE)
                 .single()
                 .collectData()
                 .first()
@@ -174,7 +174,7 @@ class GetSuggestionsUseCaseTest {
                 )
             ),
             useCase(hasExactMatch = false)
-                .run(shoppingListId, "a 2kg", PAGE_SIZE)
+                .getSuggestions(shoppingListId, "a 2kg", PAGE_SIZE)
                 .single()
                 .collectData()
         )

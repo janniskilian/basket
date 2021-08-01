@@ -1,7 +1,10 @@
 package de.janniskilian.basket.feature.main
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,9 +18,15 @@ import de.janniskilian.basket.feature.categories.CategoryNavigationDestination
 import de.janniskilian.basket.feature.lists.AddListItemNavigationDestination
 import de.janniskilian.basket.feature.lists.CreateListNavigationDestination
 import de.janniskilian.basket.feature.lists.ListNavigationDestination
+import de.janniskilian.basket.feature.lists.ListsNavigationDestination
+import de.janniskilian.basket.feature.lists.list.ListMoreMenuContent
 import de.janniskilian.basket.feature.lists.list.itemorder.ListItemOrderContent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
+@ExperimentalCoroutinesApi
+@ExperimentalComposeUiApi
+@ExperimentalMaterialApi
 @Composable
 fun Navigation(
     startDestination: NavigationDestination,
@@ -25,7 +34,7 @@ fun Navigation(
 ) {
     NavHost(
         navController = LocalNavController.current,
-        startDestination = startDestination.routeScheme,
+        startDestination = ListsNavigationDestination.routeScheme,
         modifier = modifier
     ) {
         NavigationRoot
@@ -45,9 +54,22 @@ fun Navigation(
 
         dialog(
             "list/itemOrder/{listId}",
-            listOf(navArgument(ListNavigationDestination.LIST_ID_PARAM) { type = NavType.LongType })
+            listOf(navArgument(ListNavigationDestination.LIST_ID_PARAM) {
+                type = NavType.LongType
+            }),
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
             ListItemOrderContent()
+        }
+
+        dialog(
+            "list/moreMenu/{listId}",
+            listOf(navArgument(ListNavigationDestination.LIST_ID_PARAM) {
+                type = NavType.LongType
+            }),
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            ListMoreMenuContent()
         }
     }
 }

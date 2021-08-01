@@ -35,17 +35,17 @@ class ArticleDataClientImpl @Inject constructor(
 
     override suspend fun get(articleId: ArticleId): Article? = withIOContext {
         dao
-            .selectSuggestionWhereNameLike(articleId.value)
+            .select(articleId.value)
             ?.let(::roomToModel)
     }
 
-    override fun getSuggestionWhereNameLike(
+    override fun getSuggestionsWhereNameLike(
         name: String,
         shoppingListId: ShoppingListId,
         pageSize: Int
     ): Flow<PagingData<ArticleSuggestion>> =
         Pager(PagingConfig(pageSize)) {
-            dao.selectSuggestionWhereNameLike(
+            dao.selectSuggestionsWhereNameLike(
                 "${name.withoutSpecialChars()}%",
                 shoppingListId.value
             )
@@ -53,16 +53,20 @@ class ArticleDataClientImpl @Inject constructor(
             .flow
             .map { result ->
                 result.map {
-                    ArticleSuggestion(
-                        Article(
-                            ArticleId(it.articleId),
-                            it.articleName,
-                            roomToModel(it.category)
-                        ),
-                        it.shoppingListId == shoppingListId.value
-                    )
+                    roomToModel(it, shoppingListId)
                 }
             }
+
+    override suspend fun getFirstSuggestionWhereNameLike(
+        name: String,
+        shoppingListId: ShoppingListId
+    ): ArticleSuggestion? =
+        dao
+            .selectFirstSuggestionWhereNameLike(
+                "${name.withoutSpecialChars()}%",
+                shoppingListId.value
+            )
+            ?.let { roomToModel(it, shoppingListId) }
 
     override fun getWhereNameLike(name: String, pageSize: Int): Flow<PagingData<Article>> =
         Pager(PagingConfig(pageSize)) {
